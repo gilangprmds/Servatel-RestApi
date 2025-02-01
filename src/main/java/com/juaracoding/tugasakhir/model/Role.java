@@ -18,9 +18,6 @@ public class Role {
     @Column(name = "IDRole")
     private Long id;
 
-    @Column(name = "NamaRole")
-    private String name;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "RoleType")
     private RoleType roleType;
@@ -35,13 +32,4 @@ public class Role {
     )
     private List<Menu> ltMenu;
 
-    @Column(name = "CreatedBy",updatable = false,nullable = false)
-    private String createdBy;
-    @Column(name = "CreatedDate",updatable = false,nullable = false)
-    private Date createdDate = new Date();
-
-    @Column(name = "UpdatedBy",insertable = false)
-    private String updatedBy;
-    @Column(name = "UpdatedDate",insertable = false)
-    private Date updatedDate;
 }

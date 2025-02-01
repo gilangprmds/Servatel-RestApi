@@ -1,5 +1,6 @@
 package com.juaracoding.tugasakhir.dto.respone;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.juaracoding.tugasakhir.dto.validasi.AddressDTO;
 import com.juaracoding.tugasakhir.dto.validasi.RoomDTO;
 import com.juaracoding.tugasakhir.model.Address;
@@ -19,5 +20,6 @@ public class RespHotelDTO {
     private AddressDTO address;
     private List<RespRoomDTO> rooms;
     private String description;
-//    private User user;
+    @JsonProperty("manager-username")
+    private String userUsername;
 }

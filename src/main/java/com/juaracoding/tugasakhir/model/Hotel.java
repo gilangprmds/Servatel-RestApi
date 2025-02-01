@@ -38,8 +38,4 @@ public class Hotel {
     @Column(name = "Deskripsi")
     private String description;
 
-    public void addRoom(Room room) {
-        rooms.add(room);
-        room.setHotel(this); // Set the hotel reference for the room
-    }
 }
