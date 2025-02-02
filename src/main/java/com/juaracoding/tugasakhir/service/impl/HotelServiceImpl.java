@@ -1,5 +1,6 @@
 package com.juaracoding.tugasakhir.service.impl;
 
+import com.juaracoding.tugasakhir.config.OtherConfig;
 import com.juaracoding.tugasakhir.core.IService;
 import com.juaracoding.tugasakhir.dto.respone.RespHotelDTO;
 import com.juaracoding.tugasakhir.dto.validasi.HotelRegistrationDTO;
@@ -10,6 +11,7 @@ import com.juaracoding.tugasakhir.repository.AddressRepository;
 import com.juaracoding.tugasakhir.repository.HotelRepository;
 import com.juaracoding.tugasakhir.repository.RoomRepository;
 import com.juaracoding.tugasakhir.service.HotelService;
+import com.juaracoding.tugasakhir.util.LoggingFile;
 import com.juaracoding.tugasakhir.util.TransformPagination;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -65,6 +67,7 @@ public class HotelServiceImpl implements HotelService<Hotel> {
             hotelRepository.save(hotel);
 
         }catch (Exception e){
+            LoggingFile.logException("HotelService", "save",e, OtherConfig.getEnableLogFile());
             return new ResponseHandler().handleResponse("Data Gagal Disimpan",
                     HttpStatus.INTERNAL_SERVER_ERROR,null,"FEAUT01001", request);
         }
@@ -95,6 +98,7 @@ public class HotelServiceImpl implements HotelService<Hotel> {
 
             hotelRepository.save(hotelDB);
         }catch (Exception e){
+            LoggingFile.logException("HotelService", "update",e, OtherConfig.getEnableLogFile());
             return new ResponseHandler().handleResponse("Data Gagal Diupdate",
                     HttpStatus.INTERNAL_SERVER_ERROR,null,"FEAUT01002", request);
         }
@@ -112,6 +116,7 @@ public class HotelServiceImpl implements HotelService<Hotel> {
             }
             hotelRepository.delete(existingHotel.get());
         }catch (Exception e){
+            LoggingFile.logException("HotelService", "delete",e, OtherConfig.getEnableLogFile());
             return new ResponseHandler().handleResponse("Data Gagal Dihapus",
                     HttpStatus.INTERNAL_SERVER_ERROR,null,"FEAUT01003", request);
         }
@@ -121,34 +126,48 @@ public class HotelServiceImpl implements HotelService<Hotel> {
 
     @Override
     public ResponseEntity<Object> findAll(Pageable pageable, HttpServletRequest request) {
-        Page<Hotel> page = null;
-        List<Hotel> list = null;
-        page = hotelRepository.findAll(pageable);
-        list = page.getContent();
-        List<RespHotelDTO> listDTO = convertToListRespHotelDTO(list);
+        Map<String, Object> mapList;
+        try{
+            Page<Hotel> page = null;
+            List<Hotel> list = null;
+            page = hotelRepository.findAll(pageable);
+            list = page.getContent();
+            List<RespHotelDTO> listDTO = convertToListRespHotelDTO(list);
 
-        if (list.isEmpty()){
-            return new ResponseHandler().handleResponse("Hotel Tidak Ditemukan",
-                    HttpStatus.BAD_REQUEST,null,"FVAUT01004", request);
+            if (list.isEmpty()){
+                return new ResponseHandler().handleResponse("Hotel Tidak Ditemukan",
+                        HttpStatus.BAD_REQUEST,null,"FVAUT01004", request);
+            }
+            mapList = transformPagination.transformPagination(listDTO,page,"id", "");
+        } catch (Exception e) {
+            LoggingFile.logException("HotelService", "findAll",e, OtherConfig.getEnableLogFile());
+            return new ResponseHandler().handleResponse("Data Gagal Diakses",
+                    HttpStatus.INTERNAL_SERVER_ERROR,null,"FEAUT01003", request);
         }
-        Map<String, Object> mapList = transformPagination.transformPagination(listDTO,page,"id", "");
         return new ResponseHandler().handleResponse("OK",
                 HttpStatus.OK,
                 mapList,null,request);
     }
 
     public ResponseEntity<Object> findAllByManagerId(Pageable pageable,Long id, HttpServletRequest request) {
-        Page<Hotel> page = null;
-        List<Hotel> list = null;
-        page = hotelRepository.findAllByUser_Id(pageable, id);
-        list = page.getContent();
-        List<RespHotelDTO> listDTO = convertToListRespHotelDTO(list);
+        Map<String, Object> mapList;
+        try {
+            Page<Hotel> page = null;
+            List<Hotel> list = null;
+            page = hotelRepository.findAllByUser_Id(pageable, id);
+            list = page.getContent();
+            List<RespHotelDTO> listDTO = convertToListRespHotelDTO(list);
 
-        if (list.isEmpty()){
-            return new ResponseHandler().handleResponse("Hotel Tidak Ditemukan",
-                    HttpStatus.BAD_REQUEST,null,"FVAUT01004", request);
+            if (list.isEmpty()){
+                return new ResponseHandler().handleResponse("Hotel Tidak Ditemukan",
+                        HttpStatus.BAD_REQUEST,null,"FVAUT01004", request);
+            }
+            mapList = transformPagination.transformPagination(listDTO,page,"id", "");
+        } catch (Exception e) {
+            LoggingFile.logException("HotelService", "findAllByManagerId",e, OtherConfig.getEnableLogFile());
+            return new ResponseHandler().handleResponse("Data Gagal Diakses",
+                    HttpStatus.INTERNAL_SERVER_ERROR,null,"FEAUT01003", request);
         }
-        Map<String, Object> mapList = transformPagination.transformPagination(listDTO,page,"id", "");
         return new ResponseHandler().handleResponse("OK",
                 HttpStatus.OK,
                 mapList,null,request);
@@ -166,6 +185,7 @@ public class HotelServiceImpl implements HotelService<Hotel> {
             Hotel hotelDB = existingHotel.get();
             respHotelDTO = modelMapper.map(hotelDB, RespHotelDTO.class);
         } catch (Exception e) {
+            LoggingFile.logException("HotelService", "findById",e, OtherConfig.getEnableLogFile());
             return new ResponseHandler().handleResponse("Data Gagal Diakses",
                     HttpStatus.INTERNAL_SERVER_ERROR,null,"FEAUT01003", request);
         }
