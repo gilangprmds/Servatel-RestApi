@@ -158,6 +158,7 @@ public class HotelServiceImpl implements HotelService<Hotel> {
             list = page.getContent();
             List<RespHotelDTO> listDTO = convertToListRespHotelDTO(list);
 
+
             if (list.isEmpty()){
                 return new ResponseHandler().handleResponse("Hotel Tidak Ditemukan",
                         HttpStatus.BAD_REQUEST,null,"FVAUT01004", request);
