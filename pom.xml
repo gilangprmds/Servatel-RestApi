@@ -30,6 +30,21 @@
         <java.version>17</java.version>
     </properties>
     <dependencies>
+<!--        started hashing and encryption-->
+        <!-- https://mvnrepository.com/artifact/org.mindrot/jbcrypt -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.79</version>
+        </dependency>
+<!--        ended hashing and encryption-->
         <!-- Log4j2 Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
