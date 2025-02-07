@@ -1,10 +1,7 @@
-package com.juaracoding.tugasakhir.dto.respone;
+package com.juaracoding.tugasakhir.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.juaracoding.tugasakhir.dto.validasi.AddressDTO;
-import com.juaracoding.tugasakhir.dto.validasi.RoomDTO;
-import com.juaracoding.tugasakhir.model.Address;
-import com.juaracoding.tugasakhir.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

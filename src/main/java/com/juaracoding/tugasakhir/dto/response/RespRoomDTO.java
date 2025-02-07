@@ -1,6 +1,5 @@
-package com.juaracoding.tugasakhir.dto.respone;
+package com.juaracoding.tugasakhir.dto.response;
 
-import com.juaracoding.tugasakhir.dto.validasi.HotelRegistrationDTO;
 import com.juaracoding.tugasakhir.enums.RoomType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
