@@ -1,8 +1,7 @@
 package com.juaracoding.tugasakhir.service.impl;
 
 import com.juaracoding.tugasakhir.config.OtherConfig;
-import com.juaracoding.tugasakhir.core.IService;
-import com.juaracoding.tugasakhir.dto.respone.RespHotelDTO;
+import com.juaracoding.tugasakhir.dto.response.RespHotelDTO;
 import com.juaracoding.tugasakhir.dto.validasi.HotelRegistrationDTO;
 import com.juaracoding.tugasakhir.handler.ResponseHandler;
 import com.juaracoding.tugasakhir.model.Hotel;
