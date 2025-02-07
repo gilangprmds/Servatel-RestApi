@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +25,7 @@ public class User {
     private String password;
     @Column (name ="FirstName", length = 50, nullable = false)
     private String firstName;
-    @Column (name = "LastName", length = 50)
+    @Column (name = "LastName", length = 50, nullable = false)
     private String lastName;
     @Column (name = "Email", length = 60, nullable = false, unique = true)
     private String email;
@@ -33,11 +34,28 @@ public class User {
     @Column (name = "Address", length = 255, nullable = false)
     private String address;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id_role", foreignKey = @ForeignKey(name = "fk-user-to-role"))
-    private Role role;
 
     @OneToMany(mappedBy = "user")
     private List<Booking> bookingsList = new ArrayList<>();
+
+    @Column(name = "TanggalLahir")
+    private LocalDate tanggalLahir;
+    @Transient
+    private Integer umur;
+    @ManyToOne
+    @JoinColumn(name = "RoleIdRole", foreignKey = @ForeignKey(name = "fk-user-to-role"))
+    private Role role;
+
+//    @Column(name = "OTP",length = 60)
+//    private String otp;
+
+    @Column(name = "CreatedBy",updatable = false,nullable = false)
+    private String createdBy;
+    @Column(name = "CreatedDate",updatable = false,nullable = false)
+    private Date createdDate = new Date();
+    @Column(name = "UpdatedBy",insertable = false)
+    private String updatedBy;
+    @Column(name = "UpdatedDate",insertable = false)
+    private Date updatedDate;
 
 }
