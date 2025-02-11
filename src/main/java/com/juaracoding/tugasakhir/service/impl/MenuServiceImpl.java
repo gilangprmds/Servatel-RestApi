@@ -11,30 +11,50 @@ Version 1.0
 */
 
 import com.juaracoding.tugasakhir.config.OtherConfig;
+import com.juaracoding.tugasakhir.core.IReportForm;
 import com.juaracoding.tugasakhir.core.IService;
+import com.juaracoding.tugasakhir.dto.response.RespMenuDTO;
 import com.juaracoding.tugasakhir.dto.validasi.ValMenuDTO;
+import com.juaracoding.tugasakhir.handler.ResponseHandler;
 import com.juaracoding.tugasakhir.model.Menu;
 import com.juaracoding.tugasakhir.repository.MenuRepository;
-import com.juaracoding.tugasakhir.util.GlobalResponse;
-import com.juaracoding.tugasakhir.util.LoggingFile;
+import com.juaracoding.tugasakhir.util.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.util.Date;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
-public class MenuServiceImpl implements IService<Menu> {
+public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
 
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
     private MenuRepository menuRepo;
+
+    @Autowired
+    private TransformPagination transformPagination;
+
+    @Autowired
+    private PdfGenerator pdfGenerator;
+
+    @Autowired
+    private SpringTemplateEngine springTemplateEngine;
+
+    private StringBuilder sbuild = new StringBuilder();
 
     @Override
     public ResponseEntity<Object> save(Menu menu, HttpServletRequest request) {
@@ -94,19 +114,219 @@ public class MenuServiceImpl implements IService<Menu> {
         return GlobalResponse.dataBerhasilDihapus(request);
     }
 
+
     @Override
     public ResponseEntity<Object> findAll(Pageable pageable, HttpServletRequest request) {
-        return null;
+        Page<Menu> page = null;
+        List<Menu> list = null;
+        page = menuRepo.findAll(pageable);
+        list = page.getContent();
+//        List<RespMenuDTO> listDTO = convertToListRespMenuDTO(list);
+        List<TableMenuDTO> listDTO = convertToTableMenuDTO(list);
+
+        if(list.isEmpty()){
+            return GlobalResponse.dataTidakDitemukan(request);
+        }
+        Map<String, Object> mapList = transformPagination.transformPagination(listDTO,page,"id","");
+        return GlobalResponse.dataResponseList(mapList,request);
     }
 
     @Override
     public ResponseEntity<Object> findById(Long id, HttpServletRequest request) {
-        return null;
+        RespMenuDTO respMenuDTO;
+        try{
+            Optional<Menu> menuOptional = menuRepo.findById(id);
+            if(!menuOptional.isPresent()){
+                return GlobalResponse.dataTidakDitemukan(request);
+            }
+            Menu menuDB = menuOptional.get();
+            respMenuDTO = modelMapper.map(menuDB, RespMenuDTO.class);
+        }catch (Exception e){
+            LoggingFile.logException("MenuService","findById --> Line 162",e, OtherConfig.getEnableLogFile());
+            return GlobalResponse.dataGagalDiakses("FEAUT02041",request);
+        }
+        return new ResponseHandler().handleResponse("OK",
+                HttpStatus.OK,
+                respMenuDTO,null,request);
     }
 
     @Override
     public ResponseEntity<Object> findByParam(Pageable pageable, String columnName, String value, HttpServletRequest request) {
-        return null;
+        Page<Menu> page = null;
+        List<Menu> list = null;
+        switch(columnName){
+
+            case "nama": page = menuRepo.findByNamaContainsIgnoreCase(pageable,value);break;
+            case "path": page = menuRepo.findByPathContainsIgnoreCase(pageable,value);break;
+            case "group": page = menuRepo.cariGroupMenu(pageable,value);break;
+            default : page = menuRepo.findAll(pageable);break;
+        }
+        list = page.getContent();
+        if(list.isEmpty()){
+            return GlobalResponse.dataTidakDitemukan(request);
+        }
+//        List<RespMenuDTO> listDTO = convertToListRespMenuDTO(list);
+        List<TableMenuDTO> listDTO = convertToTableMenuDTO(list);
+        Map<String, Object> mapList = transformPagination.transformPagination(listDTO,page,columnName,value);
+        return GlobalResponse.dataResponseList(mapList,request);
+    }
+
+    @Override
+    public ResponseEntity<Object> uploadDataExcel(MultipartFile multipartFile, HttpServletRequest request) {
+
+        String message = "";
+        if(!ExcelReader.hasWorkBookFormat(multipartFile)){
+            return GlobalResponse.formatHarusExcel(request);
+        }
+
+        try{
+            List lt = new ExcelReader(multipartFile.getInputStream(),"sheet1").getDataMap();
+            if(lt.isEmpty()){
+                if(ExcelReader.hasWorkBookFormat(multipartFile)){
+                    return GlobalResponse.dataFileKosong(request);
+                }
+            }
+            menuRepo.saveAll(convertListWorkBookToListEntity(lt,1L));
+        }catch (Exception e){
+            LoggingFile.logException("MenuService","upload excel --> Line 213",e, OtherConfig.getEnableLogFile());
+            return GlobalResponse.fileExcelGagalDiproses("FEAUT02061",request);
+        }
+        return GlobalResponse.dataBerhasilDisimpan(request);
+    }
+
+    @Override
+    public List<Menu> convertListWorkBookToListEntity(List<Map<String, String>> workBookData, Long userId) {
+        List<Menu> list = new ArrayList<>();
+        for (int i = 0; i < workBookData.size(); i++) {
+            Map<String, String> map = workBookData.get(i);
+            Menu menu = new Menu();
+            menu.setName(map.get("nama-menu"));
+            menu.setPath(map.get("path"));
+            menu.setCreatedBy(String.valueOf(userId));
+            menu.setCreatedDate(new Date());
+            list.add(menu);
+        }
+        return list;
+    }
+
+    @Override
+    public void downloadReportExcel(String column, String value, HttpServletRequest request, HttpServletResponse response) {
+        List<Menu> menuList = null;
+        switch (column){
+            case "nama":menuList= menuRepo.findByNamaContainsIgnoreCase(value);break;
+//            case "group":menuList= menuRepo.cariGroupMenu(value);break;
+            default:menuList= menuRepo.findAll();break;
+        }
+        /** menggunakan response karena sama untuk report */
+        List<RespMenuDTO> respGroupMenuDTOList = convertToListRespMenuDTO(menuList);
+        if(respGroupMenuDTOList.isEmpty()){
+            GlobalResponse.manualResponse(response,GlobalResponse.dataTidakDitemukan(request));
+            return;
+        }
+
+        sbuild.setLength(0);
+        String headerKey = "Content-Disposition";
+        sbuild.setLength(0);
+
+        String headerValue = sbuild.append("attachment; filename=group-menu_").
+                append(new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss.SSS").format(new Date())).append(".xlsx").toString();
+        response.setHeader(headerKey, headerValue);
+        response.setContentType("application/octet-stream");
+
+        Map<String,Object> map = GlobalFunction.convertClassToObject(new RespMenuDTO());
+        List<String> listTemp = new ArrayList<>();
+        for(Map.Entry<String,Object> entry : map.entrySet()){
+            listTemp.add(entry.getKey());
+        }
+
+        int intListTemp = listTemp.size();
+        String [] headerArr = new String[intListTemp];// kolom judul di excel
+        String [] loopDataArr = new String[intListTemp];//kolom judul untuk java reflection
+
+        /** Untuk mempersiapkan data judul kolom nya */
+        for(int i=0;i<intListTemp;i++){
+            headerArr[i] = GlobalFunction.camelToStandar(String.valueOf(listTemp.get(i))).toUpperCase();
+            loopDataArr[i] = listTemp.get(i);
+        }
+        /** Untuk mempersiapkan data body baris nya */
+        int listRespGroupMenuDTOSize = respGroupMenuDTOList.size();
+        String [][] strBody = new String[listRespGroupMenuDTOSize][intListTemp];
+        for(int i=0;i<listRespGroupMenuDTOSize;i++){
+            map = GlobalFunction.convertClassToObject(respGroupMenuDTOList.get(i));
+            for(int j=0;j<intListTemp;j++){
+                strBody[i][j] = String.valueOf(map.get(loopDataArr[j]));
+            }
+        }
+        new ExcelWriter(strBody,headerArr,"sheet-1",response);
+    }
+
+    @Override
+    public void generateToPDF(String column, String value, HttpServletRequest request, HttpServletResponse response) {
+        List<Menu> menuList = null;
+        switch (column){
+            case "nama":menuList= menuRepo.findByNamaContainsIgnoreCase(value);break;
+//            case "group":menuList= menuRepo.cariGroupMenu(value);break;
+            default:menuList= menuRepo.findAll();break;
+        }
+        /** menggunakan response karena sama untuk report */
+        List<RespMenuDTO> respGroupMenuDTOList = convertToListRespMenuDTO(menuList);
+        int intRespGroupMenuDTOList = respGroupMenuDTOList.size();
+
+        if(respGroupMenuDTOList.isEmpty()){
+            GlobalResponse.manualResponse(response,GlobalResponse.dataTidakDitemukan(request));
+            return;
+        }
+
+        /** INI OBJECT MAP FINAL */
+        Map<String,Object> map = new HashMap<>();
+        String strHtml = null;
+        Context context = new Context();
+        Map<String,Object> mapColumnName = GlobalFunction.convertClassToObject(new RespMenuDTO());
+        List<String> listTemp = new ArrayList<>();
+        List<String> listHelper = new ArrayList<>();
+        for (Map.Entry<String,Object> entry : mapColumnName.entrySet()) {
+            listTemp.add(GlobalFunction.camelToStandar(entry.getKey()));
+            listHelper.add(entry.getKey());
+        }
+        Map<String,Object> mapTemp = null;
+        List<Map<String,Object>> listMap = new ArrayList<>();
+        for(int i=0;i<menuList.size();i++){
+            mapTemp = GlobalFunction.convertClassToObject(menuList.get(i));
+            listMap.add(mapTemp);
+        }
+
+        map.put("title","REPORT DATA MENU");
+        map.put("listKolom",listTemp);
+        map.put("listHelper",listHelper);
+        map.put("timestamp",new Date());
+        map.put("totalData",intRespGroupMenuDTOList);
+        map.put("listContent",listMap);
+        map.put("username","Paul");
+        context.setVariables(map);
+        strHtml = springTemplateEngine.process("global-report",context);
+        pdfGenerator.htmlToPdf(strHtml,"menu",response);
+    }
+
+    public List<RespMenuDTO> convertToListRespMenuDTO(List<Menu> menuList){
+        return modelMapper.map(menuList,new TypeToken<List<RespMenuDTO>>(){}.getType());
+    }
+
+    public Menu convertToMenu(ValMenuDTO menuDTO){
+        return modelMapper.map(menuDTO,Menu.class);
+    }
+
+    public List<TableMenuDTO> convertToTableMenuDTO(List<Menu> menuList){
+        List<TableMenuDTO> list = new ArrayList<>();
+        TableMenuDTO tableMenuDTO ;
+        for(Menu menu : menuList){
+            tableMenuDTO = new TableMenuDTO();
+            tableMenuDTO.setId(menu.getId());
+            tableMenuDTO.setNama(menu.getNama());
+            tableMenuDTO.setPath(menu.getPath());
+            //tableMenuDTO.setNamaGroupMenu(menu.getGroupMenu()==null?"":menu.getGroupMenu().getNamaGroupMenu());
+            list.add(tableMenuDTO);
+        }
+        return list;
     }
 
 
