@@ -15,6 +15,7 @@ import com.juaracoding.tugasakhir.core.IService;
 import com.juaracoding.tugasakhir.dto.validasi.ValMenuDTO;
 import com.juaracoding.tugasakhir.model.Menu;
 import com.juaracoding.tugasakhir.repository.MenuRepository;
+import com.juaracoding.tugasakhir.util.GlobalFunction;
 import com.juaracoding.tugasakhir.util.GlobalResponse;
 import com.juaracoding.tugasakhir.util.LoggingFile;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -38,11 +40,12 @@ public class MenuServiceImpl implements IService<Menu> {
 
     @Override
     public ResponseEntity<Object> save(Menu menu, HttpServletRequest request) {
+        Map<String,Object> token = GlobalFunction.extractToken(request);
         try{
             if(menu==null){
                 return GlobalResponse.dataTidakValid("FVAUT02001",request);
             }
-            menu.setCreatedBy("Paul");
+            menu.setCreatedBy(token.get("firstName").toString());
             menu.setCreatedDate(new Date());
             menuRepo.save(menu);
         }catch (Exception e){
@@ -56,6 +59,7 @@ public class MenuServiceImpl implements IService<Menu> {
     @Override
     @Transactional
     public ResponseEntity<Object> update(Long id, Menu menu, HttpServletRequest request) {
+        Map<String,Object> token = GlobalFunction.extractToken(request);
         try{
             if(menu==null){
                 return GlobalResponse.dataTidakValid("FVAUT02011",request);
@@ -65,12 +69,10 @@ public class MenuServiceImpl implements IService<Menu> {
                 return GlobalResponse.dataTidakDitemukan(request);
             }
             Menu menuDB = menuOptional.get();
-            menuDB.setUpdatedBy("Reksa");
+            menuDB.setUpdatedBy(token.get("firstName").toString());
             menuDB.setUpdatedDate(new Date());
             menuDB.setName(menu.getName());
             menuDB.setPath(menu.getPath());
-
-
         }catch (Exception e){
             LoggingFile.logException("MenuService","update --> Line 75",e, OtherConfig.getEnableLogFile());
             return GlobalResponse.dataGagalDiubah("FEAUT02011",request);
@@ -81,6 +83,7 @@ public class MenuServiceImpl implements IService<Menu> {
     @Override
     @Transactional
     public ResponseEntity<Object> delete(Long id, HttpServletRequest request) {
+        Map<String,Object> token = GlobalFunction.extractToken(request);
         try{
             Optional<Menu> menuOptional = menuRepo.findById(id);
             if(!menuOptional.isPresent()){

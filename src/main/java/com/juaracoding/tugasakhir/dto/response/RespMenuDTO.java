@@ -17,7 +17,7 @@ import lombok.Setter;
 @Getter
 public class RespMenuDTO {
     private Long id;
-    private String nama;
+    private String name;
     private String path;
 
 

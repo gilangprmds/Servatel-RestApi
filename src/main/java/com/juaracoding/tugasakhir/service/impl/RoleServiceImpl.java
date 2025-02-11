@@ -12,6 +12,7 @@ Version 1.0
 
 import com.juaracoding.tugasakhir.config.OtherConfig;
 import com.juaracoding.tugasakhir.core.IService;
+import com.juaracoding.tugasakhir.dto.response.RespRoleDTO;
 import com.juaracoding.tugasakhir.dto.validasi.ValRoleDTO;
 import com.juaracoding.tugasakhir.model.Role;
 import com.juaracoding.tugasakhir.repository.RoleRepository;
@@ -21,12 +22,14 @@ import com.juaracoding.tugasakhir.util.LoggingFile;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,16 +49,14 @@ public class RoleServiceImpl implements IService<Role> {
             if(role==null){
                 return GlobalResponse.dataTidakValid("FVAUT03001",request);
             }
-            role.setCreatedBy(token.get("userId").toString());
+            role.setCreatedBy(token.get("firstName").toString());
             role.setCreatedDate(new Date());
             role.setLtMenu(role.getLtMenu());
-
             roleRepo.save(role);
         }catch (Exception e){
             LoggingFile.logException("AksesService","save --> Line 42",e, OtherConfig.getEnableLogFile());
             return GlobalResponse.dataGagalDisimpan("FEAUT03001",request);
         }
-
         return GlobalResponse.dataBerhasilDisimpan(request);
     }
 
@@ -72,9 +73,9 @@ public class RoleServiceImpl implements IService<Role> {
                 return GlobalResponse.dataTidakDitemukan(request);
             }
             Role roleDB = roleOptional.get();
-            roleDB.setUpdatedBy(token.get("userId").toString());
+            roleDB.setUpdatedBy(token.get("firstName").toString());
             roleDB.setUpdatedDate(new Date());
-            roleDB.setRoleType(role.getRoleType());
+            roleDB.setRole(role.getRole());
             roleDB.setLtMenu(role.getLtMenu());
 
         }catch (Exception e){
@@ -99,16 +100,7 @@ public class RoleServiceImpl implements IService<Role> {
             return GlobalResponse.dataGagalDiubah("FEAUT03021",request);
         }
         return GlobalResponse.dataBerhasilDihapus(request);
-
-
     }
-
-
-
-
-
-
-
 
     @Override
     public ResponseEntity<Object> findAll(Pageable pageable, HttpServletRequest request) {
@@ -129,4 +121,8 @@ public class RoleServiceImpl implements IService<Role> {
     public Role convertToRole(ValRoleDTO roleDTO){
         return modelMapper.map(roleDTO,Role.class);
     }
+    public List<RespRoleDTO> convertToListRespRoleDTO(List<Role> roleList){
+        return modelMapper.map(roleList,new TypeToken<List<RespRoleDTO>>(){}.getType());
+    }
+
 }

@@ -20,7 +20,7 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "RoleType")
-    private RoleType roleType;
+    private RoleType role;
 
     @ManyToMany
     @JoinTable(name = "MapRoleMenu",

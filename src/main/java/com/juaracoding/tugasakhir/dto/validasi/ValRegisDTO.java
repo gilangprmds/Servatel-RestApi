@@ -1,10 +1,19 @@
 package com.juaracoding.tugasakhir.dto.validasi;
+
+/*
+Created By IntelliJ IDEA 2024.3 (Community Edition)
+Build #IC-243.21565.193, built on November 13, 2024
+@Author USER Febby Tri Andika
+Java Developer
+Created on 10/02/2025 14:38
+@Last Modified 10/02/2025 14:38
+Version 1.0
+*/
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.juaracoding.tugasakhir.dto.response.RespRoleDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -15,19 +24,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-/*
-Created By IntelliJ IDEA 2024.3 (Community Edition)
-Build #IC-243.21565.193, built on November 13, 2024
-@Author USER Febby Tri Andika
-Java Developer
-Created on 06/02/2025 19:31
-@Last Modified 06/02/2025 19:31
-Version 1.0
-*/
-
-@Getter
 @Setter
-public class ValUserDTO {
+@Getter
+public class ValRegisDTO {
 
     @NotNull
     @NotBlank
@@ -39,14 +38,9 @@ public class ValUserDTO {
     @NotNull
     @NotBlank
     @NotEmpty
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[_#\\-$@])[\\w].{8,15}$",
-            message = "Format minimal 1 angka, 1 huruf kecil, 1 huruf besar, 1 spesial karakter (_ \"Underscore\", - \"Hyphen\", @ \"At\", # \"Hash\", atau $ \"Dollar\") setelah 4 kondisi min 9 max 16 alfanumerik, contoh : aB4$12345")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@_#\\-$])[\\w].{8,15}$",
+            message = "Format minimal 1 angka, 1 huruf kecil, 1 huruf besar, 1 spesial karakter (_ \"Underscore\", - \"Hyphen\", # \"Hash\", atau $ \"Dollar\" atau @ \"At\") setelah 4 kondisi min 9 max 16 alfanumerik, contoh : aB4$12345")
     private String password;
-
-    @JsonProperty("first-name")
-    private String firstName;
-    @JsonProperty("last-name")
-    private String lastName;
 
     @NotNull
     @NotBlank
@@ -54,6 +48,12 @@ public class ValUserDTO {
     @Pattern(regexp = "^(?=.{1,256})(?=.{1,64}@.{1,255}$)(?:(?![.])[a-zA-Z0-9._%+-]+(?:(?<!\\\\)[.][a-zA-Z0-9-]+)*?)@[a-zA-Z0-9.-]+(?:\\.[a-zA-Z]{2,50})+$",
             message = "Format tidak valid contoh : user_name123@sub.domain.com")
     private String email;
+    @NotNull
+    @NotBlank
+    @NotEmpty
+    @Pattern(regexp = "^[\\w\\s\\.\\,]{20,255}$",
+            message = "Format Alamat Tidak Valid min 20 maks 255, contoh : Jln. Kenari 2B jakbar 11480")
+    private String address;
 
     @NotNull
     @NotBlank
@@ -63,14 +63,6 @@ public class ValUserDTO {
     @JsonProperty("no-hp")
     private String noHp;
 
-    @NotNull
-    @NotBlank
-    @NotEmpty
-    @Pattern(regexp = "^[\\w\\s\\.\\,]{20,255}$",
-            message = "Format Alamat Tidak Valid min 20 maks 255, contoh : Jln. Kenari 2B jakbar 11480")
-    private String address;
-
-
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -78,8 +70,16 @@ public class ValUserDTO {
     private LocalDate tanggalLahir;
 
     @NotNull
-    private RespRoleDTO role;
+    @NotBlank
+    @NotEmpty
+    @Pattern(regexp = "^[a-zA-Z\\s]{4,25}$", message = "Hanya Alfabet dan spasi Minimal 4 Maksimal 25")
+    @JsonProperty("first-name")
+    private String firstName;
 
-
-
+    @NotNull
+    @NotBlank
+    @NotEmpty
+    @Pattern(regexp = "^[a-zA-Z\\s]{4,25}$", message = "Hanya Alfabet dan spasi Minimal 4 Maksimal 25")
+    @JsonProperty("last-name")
+    private String lastName;
 }

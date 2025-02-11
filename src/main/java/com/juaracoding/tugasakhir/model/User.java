@@ -3,17 +3,18 @@ package com.juaracoding.tugasakhir.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "MstUser")
-public class User {
+public class User implements UserDetails {
     @Id
     @Column(name = "IDUser")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,20 +35,53 @@ public class User {
     @Column (name = "Address", length = 255, nullable = false)
     private String address;
 
+    /** ubah saat migrasi DB */
+    @Column(name = "IsRegistered",columnDefinition = ("bit default 0"))
+    private Boolean isRegistered=false;
 
-    @OneToMany(mappedBy = "user")
-    private List<Booking> bookingsList = new ArrayList<>();
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<Menu> lt = this.role.getLtMenu();
+        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+        for (Menu menu :
+                lt) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(menu.getName()));
+        }
+        return grantedAuthorities;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
 
     @Column(name = "TanggalLahir")
     private LocalDate tanggalLahir;
-    @Transient
-    private Integer umur;
+//    @Transient
+//    private Integer umur;
+//    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+//    private List<Booking> bookingsList = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "RoleIdRole", foreignKey = @ForeignKey(name = "fk-user-to-role"))
     private Role role;
 
-//    @Column(name = "OTP",length = 60)
-//    private String otp;
+    @Column(name = "OTP",length = 60)
+    private String otp;
 
     @Column(name = "CreatedBy",updatable = false,nullable = false)
     private String createdBy;
