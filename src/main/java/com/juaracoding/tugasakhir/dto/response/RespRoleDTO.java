@@ -10,6 +10,7 @@ Created on 07/02/2025 20:05
 Version 1.0
 */
 //import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.juaracoding.tugasakhir.enums.RoleType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,7 +22,7 @@ public class RespRoleDTO {
 
         private Long id;
 
-        private String nama;
+        private RoleType roleType;
 
         private List<RespMenuDTO> ltMenu;
 }

@@ -9,6 +9,7 @@ Created on 07/02/2025 20:25
 @Last Modified 07/02/2025 20:25
 Version 1.0
 */
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.juaracoding.tugasakhir.dto.response.RespMenuDTO;
 import com.juaracoding.tugasakhir.enums.RoleType;
 import jakarta.validation.constraints.NotBlank;
@@ -32,9 +33,11 @@ public class ValRoleDTO {
     @NotNull(message = "Field Nama Tidak Boleh NULL")
     @NotEmpty(message = "Field Nama Tidak Boleh Kosong")
     @NotBlank(message = "Field Nama Tidak Boleh Blank")
-    private RoleType role;
+    @JsonProperty("role-type")
+    private RoleType roleType;
 
     @NotNull(message = "Menu Wajib DIISI")
+    @JsonProperty("lt-menu")
     private List<RespMenuDTO> ltMenu;
 
 

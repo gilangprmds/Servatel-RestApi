@@ -14,6 +14,7 @@ import com.juaracoding.tugasakhir.config.OtherConfig;
 import com.juaracoding.tugasakhir.core.IReportForm;
 import com.juaracoding.tugasakhir.core.IService;
 import com.juaracoding.tugasakhir.dto.response.RespMenuDTO;
+import com.juaracoding.tugasakhir.dto.table.TableMenuDTO;
 import com.juaracoding.tugasakhir.dto.validasi.ValMenuDTO;
 import com.juaracoding.tugasakhir.handler.ResponseHandler;
 import com.juaracoding.tugasakhir.model.Menu;
@@ -156,9 +157,9 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
         List<Menu> list = null;
         switch(columnName){
 
-            case "nama": page = menuRepo.findByNamaContainsIgnoreCase(pageable,value);break;
+            case "name": page = menuRepo.findByNameContainsIgnoreCase(pageable,value);break;
             case "path": page = menuRepo.findByPathContainsIgnoreCase(pageable,value);break;
-            case "group": page = menuRepo.cariGroupMenu(pageable,value);break;
+            //case "group": page = menuRepo.cariGroupMenu(pageable,value);break;
             default : page = menuRepo.findAll(pageable);break;
         }
         list = page.getContent();
@@ -173,7 +174,7 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
 
     @Override
     public ResponseEntity<Object> uploadDataExcel(MultipartFile multipartFile, HttpServletRequest request) {
-
+        Map<String,Object> token = GlobalFunction.extractToken(request);
         String message = "";
         if(!ExcelReader.hasWorkBookFormat(multipartFile)){
             return GlobalResponse.formatHarusExcel(request);
@@ -186,7 +187,7 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
                     return GlobalResponse.dataFileKosong(request);
                 }
             }
-            menuRepo.saveAll(convertListWorkBookToListEntity(lt,1L));
+            menuRepo.saveAll(convertListWorkBookToListEntity(lt,Long.parseLong(token.get("userId").toString())));
         }catch (Exception e){
             LoggingFile.logException("MenuService","upload excel --> Line 213",e, OtherConfig.getEnableLogFile());
             return GlobalResponse.fileExcelGagalDiproses("FEAUT02061",request);
@@ -200,7 +201,7 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
         for (int i = 0; i < workBookData.size(); i++) {
             Map<String, String> map = workBookData.get(i);
             Menu menu = new Menu();
-            menu.setName(map.get("nama-menu"));
+            menu.setName(map.get("nama-menu"));//setting header column
             menu.setPath(map.get("path"));
             menu.setCreatedBy(String.valueOf(userId));
             menu.setCreatedDate(new Date());
@@ -213,13 +214,13 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
     public void downloadReportExcel(String column, String value, HttpServletRequest request, HttpServletResponse response) {
         List<Menu> menuList = null;
         switch (column){
-            case "nama":menuList= menuRepo.findByNamaContainsIgnoreCase(value);break;
-//            case "group":menuList= menuRepo.cariGroupMenu(value);break;
+            case "name":menuList= menuRepo.findByNameContainsIgnoreCase(value);break;
+            case "path":menuList= menuRepo.findByPathContainsIgnoreCase(value);break;
             default:menuList= menuRepo.findAll();break;
         }
         /** menggunakan response karena sama untuk report */
-        List<RespMenuDTO> respGroupMenuDTOList = convertToListRespMenuDTO(menuList);
-        if(respGroupMenuDTOList.isEmpty()){
+        List<RespMenuDTO> respMenuDTOList = convertToListRespMenuDTO(menuList);
+        if(respMenuDTOList.isEmpty()){
             GlobalResponse.manualResponse(response,GlobalResponse.dataTidakDitemukan(request));
             return;
         }
@@ -228,7 +229,7 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
         String headerKey = "Content-Disposition";
         sbuild.setLength(0);
 
-        String headerValue = sbuild.append("attachment; filename=group-menu_").
+        String headerValue = sbuild.append("attachment; filename=menu_").
                 append(new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss.SSS").format(new Date())).append(".xlsx").toString();
         response.setHeader(headerKey, headerValue);
         response.setContentType("application/octet-stream");
@@ -249,10 +250,10 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
             loopDataArr[i] = listTemp.get(i);
         }
         /** Untuk mempersiapkan data body baris nya */
-        int listRespGroupMenuDTOSize = respGroupMenuDTOList.size();
-        String [][] strBody = new String[listRespGroupMenuDTOSize][intListTemp];
-        for(int i=0;i<listRespGroupMenuDTOSize;i++){
-            map = GlobalFunction.convertClassToObject(respGroupMenuDTOList.get(i));
+        int listRespMenuDTOSize = respMenuDTOList.size();
+        String [][] strBody = new String[listRespMenuDTOSize][intListTemp];
+        for(int i=0;i<listRespMenuDTOSize;i++){
+            map = GlobalFunction.convertClassToObject(respMenuDTOList.get(i));
             for(int j=0;j<intListTemp;j++){
                 strBody[i][j] = String.valueOf(map.get(loopDataArr[j]));
             }
@@ -262,17 +263,17 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
 
     @Override
     public void generateToPDF(String column, String value, HttpServletRequest request, HttpServletResponse response) {
+        Map<String,Object> token = GlobalFunction.extractToken(request);
         List<Menu> menuList = null;
         switch (column){
-            case "nama":menuList= menuRepo.findByNamaContainsIgnoreCase(value);break;
-//            case "group":menuList= menuRepo.cariGroupMenu(value);break;
+            case "nama":menuList= menuRepo.findByNameContainsIgnoreCase(value);break;
             default:menuList= menuRepo.findAll();break;
         }
         /** menggunakan response karena sama untuk report */
-        List<RespMenuDTO> respGroupMenuDTOList = convertToListRespMenuDTO(menuList);
-        int intRespGroupMenuDTOList = respGroupMenuDTOList.size();
+        List<RespMenuDTO> respMenuDTOList = convertToListRespMenuDTO(menuList);
+        int intRespMenuDTOList = respMenuDTOList.size();
 
-        if(respGroupMenuDTOList.isEmpty()){
+        if(respMenuDTOList.isEmpty()){
             GlobalResponse.manualResponse(response,GlobalResponse.dataTidakDitemukan(request));
             return;
         }
@@ -299,9 +300,9 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
         map.put("listKolom",listTemp);
         map.put("listHelper",listHelper);
         map.put("timestamp",new Date());
-        map.put("totalData",intRespGroupMenuDTOList);
+        map.put("totalData",intRespMenuDTOList);
         map.put("listContent",listMap);
-        map.put("username","Paul");
+        map.put("username",token.get("firstName"));
         context.setVariables(map);
         strHtml = springTemplateEngine.process("global-report",context);
         pdfGenerator.htmlToPdf(strHtml,"menu",response);
@@ -311,9 +312,6 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
         return modelMapper.map(menuList,new TypeToken<List<RespMenuDTO>>(){}.getType());
     }
 
-    public Menu convertToMenu(ValMenuDTO menuDTO){
-        return modelMapper.map(menuDTO,Menu.class);
-    }
 
     public List<TableMenuDTO> convertToTableMenuDTO(List<Menu> menuList){
         List<TableMenuDTO> list = new ArrayList<>();
@@ -321,7 +319,7 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
         for(Menu menu : menuList){
             tableMenuDTO = new TableMenuDTO();
             tableMenuDTO.setId(menu.getId());
-            tableMenuDTO.setNama(menu.getNama());
+            tableMenuDTO.setName(menu.getName());
             tableMenuDTO.setPath(menu.getPath());
             //tableMenuDTO.setNamaGroupMenu(menu.getGroupMenu()==null?"":menu.getGroupMenu().getNamaGroupMenu());
             list.add(tableMenuDTO);

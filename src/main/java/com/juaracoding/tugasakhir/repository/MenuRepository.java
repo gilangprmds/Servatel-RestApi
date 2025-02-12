@@ -13,18 +13,19 @@ public interface MenuRepository extends JpaRepository<Menu,Long> {
 
     //DERIVED query
     //select * from MstGroupMenu WHERE NamaGroupMenu LIKE toLower('%?%')
-    public Page<Menu> findByNamaContainsIgnoreCase(Pageable pageable, String nama);
+    public Page<Menu> findByNameContainsIgnoreCase(Pageable pageable, String name);
 
-    public Page<Menu> findByPathContainsIgnoreCase(Pageable pageable, String nama);
+    public Page<Menu> findByPathContainsIgnoreCase(Pageable pageable, String name);
 
     // UNTUK REPORT
-    public List<Menu> findByNamaContainsIgnoreCase(String nama);
+    public List<Menu> findByNameContainsIgnoreCase(String name);
+    public List<Menu> findByPathContainsIgnoreCase(String name);
 
-    @Query(value = "SELECT m FROM Menu m WHERE lower(m.groupMenu.namaGroupMenu) LIKE lower(concat('%',?1,'%'))")
-    public Page<Menu> cariGroupMenu(Pageable pageable, String nama);
+//    @Query(value = "SELECT m FROM Menu m WHERE lower(m.groupMenu.namaGroupMenu) LIKE lower(concat('%',?1,'%'))")
+//    public Page<Menu> cariGroupMenu(Pageable pageable, String nama);
 
-    @Query(value = "SELECT m FROM Menu m WHERE lower(m.groupMenu.namaGroupMenu) LIKE lower(concat('%',?1,'%'))")
-    public List<Menu> cariGroupMenu(String nama);
+//    @Query(value = "SELECT m FROM Menu m WHERE lower(m.groupMenu.namaGroupMenu) LIKE lower(concat('%',?1,'%'))")
+//    public List<Menu> cariGroupMenu(String nama);
 
     public Optional<Menu> findTopByOrderByIdDesc();
 }
