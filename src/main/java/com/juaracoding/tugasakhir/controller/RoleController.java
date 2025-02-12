@@ -18,12 +18,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/role")
 public class RoleController {
 
     @Autowired
     private RoleServiceImpl roleServiceImpl;
+
+    Map<String,String> mapFilter = new HashMap<>();
+
+
+    public RoleController() {
+        filterColumnByMap();
+    }
+
 
     @PostMapping("")
     //@PreAuthorize("hasAuthority('Role')")
@@ -45,5 +56,9 @@ public class RoleController {
             @PathVariable(value = "id") Long id,
             HttpServletRequest request){
         return roleServiceImpl.delete(id,request);
+    }
+
+    public void filterColumnByMap(){
+        mapFilter.put("nama","nama");
     }
 }

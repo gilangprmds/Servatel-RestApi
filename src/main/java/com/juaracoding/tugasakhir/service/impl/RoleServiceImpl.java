@@ -43,7 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
-public class RoleServiceImpl implements IService<Role>, IReportForm<Role> {
+public class RoleServiceImpl implements IService<Role>,IReportForm<Role>{
 
     @Autowired
     private ModelMapper modelMapper ;
@@ -120,11 +120,9 @@ public class RoleServiceImpl implements IService<Role>, IReportForm<Role> {
             return GlobalResponse.dataGagalDiubah("FEAUT03021",request);
         }
         return GlobalResponse.dataBerhasilDihapus(request);
-
-
     }
 
-    @Override
+        @Override
     public ResponseEntity<Object> findAll(Pageable pageable, HttpServletRequest request) {
         Page<Role> page = null;
         List<Role> list = null;
@@ -165,7 +163,7 @@ public class RoleServiceImpl implements IService<Role>, IReportForm<Role> {
         List<Role> list = null;
         switch(columnName){
 
-            case "roleType": page = roleRepo.findByRoleType(pageable,value);break;
+            case "roleType": page = roleRepo.searchRoleType(pageable,value);break;
             default : page = roleRepo.findAll(pageable);break;
         }
         list = page.getContent();
@@ -218,13 +216,12 @@ public class RoleServiceImpl implements IService<Role>, IReportForm<Role> {
     public void downloadReportExcel(String column, String value, HttpServletRequest request, HttpServletResponse response) {
         List<Role> roleList = null;
         switch (column){
-            case "roleType":roleList= roleRepo.findByRoleTypeContainsIgnoreCase(value);break;
-//            case "group":menuList= menuRepo.cariGroupRole(value);break;
+            case "roleType":roleList= roleRepo.searchRoleType(value);break;
             default:roleList= roleRepo.findAll();break;
         }
         /** menggunakan response karena sama untuk report */
-        List<RespRoleDTO> respGroupRoleDTOList = convertToListRespRoleDTO(roleList);
-        if(respGroupRoleDTOList.isEmpty()){
+        List<RespRoleDTO> respRoleDTOList = convertToListRespRoleDTO(roleList);
+        if(respRoleDTOList.isEmpty()){
             GlobalResponse.manualResponse(response,GlobalResponse.dataTidakDitemukan(request));
             return;
         }
@@ -233,7 +230,7 @@ public class RoleServiceImpl implements IService<Role>, IReportForm<Role> {
         String headerKey = "Content-Disposition";
         sbuild.setLength(0);
 
-        String headerValue = sbuild.append("attachment; filename=group-menu_").
+        String headerValue = sbuild.append("attachment; filename=role-type_").
                 append(new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss.SSS").format(new Date())).append(".xlsx").toString();
         response.setHeader(headerKey, headerValue);
         response.setContentType("application/octet-stream");
@@ -254,10 +251,10 @@ public class RoleServiceImpl implements IService<Role>, IReportForm<Role> {
             loopDataArr[i] = listTemp.get(i);
         }
         /** Untuk mempersiapkan data body baris nya */
-        int listRespGroupRoleDTOSize = respGroupRoleDTOList.size();
-        String [][] strBody = new String[listRespGroupRoleDTOSize][intListTemp];
-        for(int i=0;i<listRespGroupRoleDTOSize;i++){
-            map = GlobalFunction.convertClassToObject(respGroupRoleDTOList.get(i));
+        int listRespRoleDTOSize = respRoleDTOList.size();
+        String [][] strBody = new String[listRespRoleDTOSize][intListTemp];
+        for(int i=0;i<listRespRoleDTOSize;i++){
+            map = GlobalFunction.convertClassToObject(respRoleDTOList.get(i));
             for(int j=0;j<intListTemp;j++){
                 strBody[i][j] = String.valueOf(map.get(loopDataArr[j]));
             }
@@ -270,15 +267,14 @@ public class RoleServiceImpl implements IService<Role>, IReportForm<Role> {
         Map<String,Object> token = GlobalFunction.extractToken(request);
         List<Role> menuList = null;
         switch (column){
-            case "nama":menuList= roleRepo.findByRoleTypeContainsIgnoreCase(value);break;
-//            case "group":menuList= menuRepo.cariGroupRole(value);break;
+            case "roleType":menuList= roleRepo.searchRoleType(value);break;
             default:menuList= roleRepo.findAll();break;
         }
         /** menggunakan response karena sama untuk report */
-        List<RespRoleDTO> respGroupRoleDTOList = convertToListRespRoleDTO(menuList);
-        int intRespGroupRoleDTOList = respGroupRoleDTOList.size();
+        List<RespRoleDTO> respRoleDTOList = convertToListRespRoleDTO(menuList);
+        int intRespRoleDTOList = respRoleDTOList.size();
 
-        if(respGroupRoleDTOList.isEmpty()){
+        if(respRoleDTOList.isEmpty()){
             GlobalResponse.manualResponse(response,GlobalResponse.dataTidakDitemukan(request));
             return;
         }
@@ -306,9 +302,9 @@ public class RoleServiceImpl implements IService<Role>, IReportForm<Role> {
         map.put("listKolom",listTemp);
         map.put("listHelper",listHelper);
         map.put("timestamp",new Date());
-        map.put("totalData",intRespGroupRoleDTOList);
+        map.put("totalData",intRespRoleDTOList);
         map.put("listContent",listMap);
-        map.put("username",token.get("namaLengkap"));
+        map.put("username",token.get("firstName"));
         context.setVariables(map);
         strHtml = springTemplateEngine.process("global-report",context);
         pdfGenerator.htmlToPdf(strHtml,"role",response);

@@ -5,15 +5,21 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
+import org.springframework.data.jpa.repository.Query;
 
+
+import java.util.List;
 
 public interface RoleRepository extends JpaRepository<Role,Long> {
 
     //DERIVED query
     //select * from MstRole WHERE NamaGroupMenu LIKE toLower('%?%')
-    public Page<Role> findByRoleType(Pageable pageable, String roleType);
+    //public Page<Role> findByRoleTypeContainsIgnoreCase(Pageable pageable, String name);
 
-    // UNTUK REPORT
-    public List<Role> findByRoleTypeContainsIgnoreCase(String name);
+    @Query(value = "SELECT r FROM Role r WHERE CAST(r.roleType as String) LIKE concat('%',?1,'%')")
+    public Page<Role> searchRoleType(Pageable pageable, String name);
+
+    // UNTUK REPORT  LIKE concat('%',?1,'%') "
+    @Query(value = "SELECT r FROM Role r WHERE CAST(r.roleType as String) LIKE concat('%',?1,'%')")
+    public List<Role> searchRoleType(String name);
 }
