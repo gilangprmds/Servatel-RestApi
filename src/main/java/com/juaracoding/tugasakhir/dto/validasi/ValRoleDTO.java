@@ -25,8 +25,13 @@ import java.util.List;
 @Getter
 public class ValRoleDTO {
 
-    private RoleType role;
-    @NotNull(message = "Menu Wajib Di Isi")
+    @NotNull(message = "Field Nama Tidak Boleh NULL")
+    @NotEmpty(message = "Field Nama Tidak Boleh Kosong")
+    @NotBlank(message = "Field Nama Tidak Boleh Blank")
+    @JsonProperty("role-type")
+    private RoleType roleType;
+
+    @NotNull(message = "Menu Wajib DIISI")
     @JsonProperty("lt-menu")
     private List<RespMenuDTO> ltMenu;
 

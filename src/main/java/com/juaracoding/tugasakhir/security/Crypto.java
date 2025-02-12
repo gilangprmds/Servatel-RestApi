@@ -64,11 +64,16 @@ public class Crypto {
     }
 
     public static void main(String[] args) {
-        String strToEncrypt = "nurlcmfhqyogsvui";//put text to encrypt in here
+        String strToEncrypt = "Andika.123Paul@1234";//put text to encrypt in here
         System.out.println("Encryption Result : "+performEncrypt(strToEncrypt));
 
         String strToDecrypt = "c02ba3d5895193b023388229063bbd91";//put text to decrypt in here
 //        String decriptionResult = new Crypto().performDecrypt(strToDecrypt);
         System.out.println("Decryption Result : "+performDecrypt(strToDecrypt));
+        System.out.println("encrypt Result : "+performEncrypt(strToEncrypt));
+        System.out.println("encypt Result  email: "+performEncrypt("avivawulantari69@gmail.com"));
+        System.out.println("encypt Result pwd : "+performEncrypt("txzwaflkjhexvfie"));
+        System.out.println("Decryption Result email : "+performDecrypt("1625283d43347b72f12aa1539299ad2a30d8b10a46cea24d9e63a12f000f2851"));
+        System.out.println("Decryption Result pwd : "+performDecrypt("13d9e250a7e868d43915acf2d920b5b36bc2b57dd8b0d45d5d6e4392f2b0fdde"));
     }
 }

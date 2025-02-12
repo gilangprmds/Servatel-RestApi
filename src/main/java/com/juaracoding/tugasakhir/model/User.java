@@ -72,8 +72,8 @@ public class User implements UserDetails {
 
     @Column(name = "TanggalLahir")
     private LocalDate tanggalLahir;
-//    @Transient
-//    private Integer umur;
+    @Transient
+    private Integer umur;
 //    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
 //    private List<Booking> bookingsList = new ArrayList<>();
     @ManyToOne
