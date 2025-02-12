@@ -59,6 +59,7 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
 
     @Override
     public ResponseEntity<Object> save(Menu menu, HttpServletRequest request) {
+        Map<String,Object> token = GlobalFunction.extractToken(request);
         try{
             if(menu==null){
                 return GlobalResponse.dataTidakValid("FVAUT02001",request);
@@ -77,6 +78,7 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
     @Override
     @Transactional
     public ResponseEntity<Object> update(Long id, Menu menu, HttpServletRequest request) {
+        Map<String,Object> token = GlobalFunction.extractToken(request);
         try{
             if(menu==null){
                 return GlobalResponse.dataTidakValid("FVAUT02011",request);
@@ -102,6 +104,7 @@ public class MenuServiceImpl implements IService<Menu>, IReportForm<Menu> {
     @Override
     @Transactional
     public ResponseEntity<Object> delete(Long id, HttpServletRequest request) {
+        Map<String,Object> token = GlobalFunction.extractToken(request);
         try{
             Optional<Menu> menuOptional = menuRepo.findById(id);
             if(!menuOptional.isPresent()){

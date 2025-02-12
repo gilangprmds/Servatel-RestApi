@@ -10,10 +10,7 @@ import com.juaracoding.tugasakhir.enums.RoleType;
 import com.juaracoding.tugasakhir.handler.ResponseHandler;
 import com.juaracoding.tugasakhir.model.User;
 import com.juaracoding.tugasakhir.repository.UserRepository;
-import com.juaracoding.tugasakhir.util.GlobalResponse;
-import com.juaracoding.tugasakhir.util.LoggingFile;
-import com.juaracoding.tugasakhir.util.PdfGenerator;
-import com.juaracoding.tugasakhir.util.TransformPagination;
+import com.juaracoding.tugasakhir.util.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -73,6 +70,7 @@ public class UserServiceImpl implements IService<User> {
 
     @Override
     public ResponseEntity<Object> save(User user, HttpServletRequest request) {
+        Map<String,Object> token = GlobalFunction.extractToken(request);
         try{
             if(user==null){
                 return GlobalResponse.dataTidakValid("FVAUT02001",request);
@@ -91,6 +89,7 @@ public class UserServiceImpl implements IService<User> {
     @Override
     @Transactional
     public ResponseEntity<Object> update(Long id, User user, HttpServletRequest request) {
+        Map<String,Object> token = GlobalFunction.extractToken(request);
         try{
             if(user==null){
                 return GlobalResponse.dataTidakValid("FVAUT02011",request);
