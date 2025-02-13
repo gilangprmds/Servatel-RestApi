@@ -25,8 +25,7 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
             "AND (a IS NULL OR a.availableRooms > 0) " +
             "GROUP BY h.id, h.name,h.address.id, h.user.id, h.description, r.id " +
             "HAVING COUNT(DISTINCT a.date) + SUM(CASE WHEN a IS NULL THEN 1 ELSE 0 END) = :numberOfDays")
-    Page<Hotel> findHotelsWithAvailableRooms(Pageable pageable,
-                                             @Param("city") String city,
+    List<Hotel> findHotelsWithAvailableRooms(@Param("city") String city,
                                              @Param("checkinDate") LocalDate checkinDate,
                                              @Param("checkoutDate") LocalDate checkoutDate,
                                              @Param("numberOfDays") Long numberOfDays);
@@ -40,8 +39,7 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
             "   WHERE a.room.hotel.id = h.id " +
             "   AND a.date >= :checkinDate AND a.date < :checkoutDate" +
             ")")
-    Page<Hotel> findHotelsWithoutAvailabilityRecords(Pageable pageable,
-                                                     @Param("city") String city,
+    List<Hotel> findHotelsWithoutAvailabilityRecords(@Param("city") String city,
                                                      @Param("checkinDate") LocalDate checkinDate,
                                                      @Param("checkoutDate") LocalDate checkoutDate);
 
@@ -55,8 +53,7 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
             "GROUP BY h.id, h.name, h.address.id, h.user.id, h.description " +
             "HAVING COUNT(DISTINCT a.date) < :numberOfDays " +
             "AND COUNT(CASE WHEN a.availableRooms > 0 THEN a.date END) > 0")
-    Page<Hotel> findHotelsWithPartialAvailabilityRecords(Pageable pageable,
-                                                         @Param("city") String city,
+    List<Hotel> findHotelsWithPartialAvailabilityRecords(@Param("city") String city,
                                                          @Param("checkinDate") LocalDate checkinDate,
                                                          @Param("checkoutDate") LocalDate checkoutDate,
                                                          @Param("numberOfDays") Long numberOfDays);

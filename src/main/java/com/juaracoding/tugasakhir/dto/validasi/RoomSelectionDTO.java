@@ -1,16 +1,17 @@
-package com.juaracoding.tugasakhir.dto.response;
+package com.juaracoding.tugasakhir.dto.validasi;
 
 import com.juaracoding.tugasakhir.enums.RoomType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
-public class RespRoomDTO {
-    private Long id;
+@AllArgsConstructor
+public class RoomSelectionDTO {
+
     private RoomType roomType;
-    private Integer roomCount;
-    private Double pricePerNight;
+    private int count;
 }

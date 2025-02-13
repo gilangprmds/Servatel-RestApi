@@ -1,5 +1,6 @@
 package com.juaracoding.tugasakhir.config;
 
+import jakarta.servlet.MultipartConfigElement;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -36,4 +37,11 @@ public class OtherConfig {
     public ModelMapper modelMapper(){
         return new ModelMapper();
     }
+
+    @Bean
+    public MultipartConfigElement multipartConfigElement() {
+        return new MultipartConfigElement("");
+    }
+
+
 }

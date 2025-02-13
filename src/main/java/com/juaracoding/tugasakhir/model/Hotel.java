@@ -38,4 +38,7 @@ public class Hotel {
     @Column(name = "Deskripsi")
     private String description;
 
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HotelImage> hotelImages;
+
 }

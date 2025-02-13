@@ -7,10 +7,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Param;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/search")
@@ -18,12 +20,22 @@ public class HotelSearchController {
     @Autowired
     private HotelSearchService hotelSearchService;
 
+//    @GetMapping("")
+//    public ResponseEntity<Object> findAllAvailableHotels(@RequestParam(value = "city") String city,
+//                                                         @RequestParam(value = "checkinDate") LocalDate checkinDate,
+//                                                         @RequestParam(value = "checkoutDate") LocalDate checkoutDate,
+//                                                         HttpServletRequest request) {
+//        Pageable pageable = PageRequest.of(0,2, Sort.by("id"));//asc
+//        return hotelSearchService.findAllAvailableHotel(pageable, city, checkinDate, checkoutDate, request);
+//    }
+
     @GetMapping("")
-    public ResponseEntity<Object> findAllAvailableHotels(@RequestParam(value = "city") String city,
+    public ResponseEntity<Object> findAllAvailableHotels(@RequestParam(value = "page") Integer page,
+                                                         @RequestParam(value = "city") String city,
                                                          @RequestParam(value = "checkinDate") LocalDate checkinDate,
                                                          @RequestParam(value = "checkoutDate") LocalDate checkoutDate,
                                                          HttpServletRequest request) {
-        Pageable pageable = PageRequest.of(0,2, Sort.by("id"));//asc
+        Pageable pageable = PageRequest.of(page-1,2, Sort.by("id"));//asc
         return hotelSearchService.findAllAvailableHotel(pageable, city, checkinDate, checkoutDate, request);
     }
 

@@ -1,14 +1,17 @@
 package com.juaracoding.tugasakhir.service.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.juaracoding.tugasakhir.config.OtherConfig;
-import com.juaracoding.tugasakhir.dto.response.RespHotelDTO;
+import com.juaracoding.tugasakhir.core.IService;
+import com.juaracoding.tugasakhir.dto.respone.RespHotelDTO;
 import com.juaracoding.tugasakhir.dto.validasi.HotelRegistrationDTO;
 import com.juaracoding.tugasakhir.handler.ResponseHandler;
 import com.juaracoding.tugasakhir.model.Hotel;
+import com.juaracoding.tugasakhir.model.HotelImage;
 import com.juaracoding.tugasakhir.model.Room;
-import com.juaracoding.tugasakhir.repository.AddressRepository;
-import com.juaracoding.tugasakhir.repository.HotelRepository;
-import com.juaracoding.tugasakhir.repository.RoomRepository;
+import com.juaracoding.tugasakhir.model.User;
+import com.juaracoding.tugasakhir.repository.*;
 import com.juaracoding.tugasakhir.service.HotelService;
 import com.juaracoding.tugasakhir.util.LoggingFile;
 import com.juaracoding.tugasakhir.util.TransformPagination;
@@ -22,10 +25,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class HotelServiceImpl implements HotelService<Hotel> {
@@ -36,9 +46,18 @@ public class HotelServiceImpl implements HotelService<Hotel> {
     private AddressRepository addressRepository;
     @Autowired
     private RoomRepository  roomRepository;
-
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private HotelImageRepository hotelImageRepository;
     @Autowired
     private RoomServiceImpl roomServiceImpl;
+
+    @Autowired
+    private Cloudinary cloudinary;
+
+    public static final String BASE_URL_IMAGE = System.getProperty("user.dir")+"\\image-saved";
+    private static Path rootPath;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -49,7 +68,11 @@ public class HotelServiceImpl implements HotelService<Hotel> {
     private TransformPagination transformPagination;
 
     @Override
-    public ResponseEntity<Object> save(Hotel hotel, HttpServletRequest request) {
+    public ResponseEntity<Object> save(Hotel hotel, List<MultipartFile> hotelImages, HttpServletRequest request) {
+//        Map map;
+//        rootPath = Paths.get(BASE_URL_IMAGE+"/"+new SimpleDateFormat("ddMMyyyyHHmmssSSS").format(new Date()));
+//        String strPathz = rootPath.toAbsolutePath().toString();
+
         try {
             Optional<Hotel> hotelExisting = hotelRepository.findByName(hotel.getName());
             if (hotelExisting.isPresent()) {
@@ -63,7 +86,29 @@ public class HotelServiceImpl implements HotelService<Hotel> {
             for (Room room : hotel.getRooms()) {
                 room.setHotel(hotel);
             }
-            hotelRepository.save(hotel);
+//            String strPathzImage = strPathz+"\\"+file.getOriginalFilename();
+//            saveFile(file);
+//            map = cloudinary.uploader().upload(strPathzImage, ObjectUtils.asMap("public_id",file.getOriginalFilename()));
+//            hotel.setPathImage(strPathzImage);
+//            hotel.setLinkImage(map.get("secure_url").toString());
+//            hotelRepository.save(hotel);
+            // **1. Simpan hotel terlebih dahulu agar memiliki ID**
+            hotel = hotelRepository.save(hotel);
+
+            List<HotelImage> images = new ArrayList<>();
+
+            // **2. Simpan gambar setelah hotel memiliki ID**
+            for (MultipartFile file : hotelImages) {
+                String imageUrl = uploadFile(file);
+                HotelImage hotelImage = new HotelImage();
+                hotelImage.setLinkImage(imageUrl);
+                hotelImage.setHotel(hotel); // Sekarang hotel sudah memiliki ID
+                images.add(hotelImageRepository.save(hotelImage));
+            }
+
+            // **3. Set daftar gambar ke hotel dan update hotel**
+            hotel.setHotelImages(images);
+            hotelRepository.save(hotel); // Simpan ulang hotel agar daftar gambar tersimpan
 
         }catch (Exception e){
             LoggingFile.logException("HotelService", "save",e, OtherConfig.getEnableLogFile());
@@ -104,7 +149,7 @@ public class HotelServiceImpl implements HotelService<Hotel> {
         return new ResponseHandler().handleResponse("Data Berhasil Diubah",
                 HttpStatus.OK,null,null, null);
     }
-
+    @Transactional
     @Override
     public ResponseEntity<Object> delete(Long id, HttpServletRequest request) {
         try {
@@ -156,11 +201,15 @@ public class HotelServiceImpl implements HotelService<Hotel> {
             page = hotelRepository.findAllByUser_Id(pageable, id);
             list = page.getContent();
             List<RespHotelDTO> listDTO = convertToListRespHotelDTO(list);
+            Optional<User> user = userRepository.findById(id);
 
-
-            if (list.isEmpty()){
-                return new ResponseHandler().handleResponse("Hotel Tidak Ditemukan",
-                        HttpStatus.BAD_REQUEST,null,"FVAUT01004", request);
+            if (list.isEmpty() && user.isPresent()) {
+                return new ResponseHandler().handleResponse("Hotel Masih Kosong",
+                        HttpStatus.OK,null,null, request);
+            }
+            if(!user.isPresent()){
+                return new ResponseHandler().handleResponse("Data Tidak Ditemukan",
+                        HttpStatus.BAD_REQUEST,null,"FVAUT01005", request);
             }
             mapList = transformPagination.transformPagination(listDTO,page,"id", "");
         } catch (Exception e) {
@@ -202,5 +251,38 @@ public class HotelServiceImpl implements HotelService<Hotel> {
     }
     public List<RespHotelDTO> convertToListRespHotelDTO(List<Hotel> respHotelList){
         return modelMapper.map(respHotelList,new TypeToken<List<RespHotelDTO>>(){}.getType());
+    }
+
+    public void saveFile(MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                throw new IllegalArgumentException("Gagal Untuk menyimpan File kosong !!");
+            }
+            Path destinationFile = this.rootPath.resolve(Paths.get(file.getOriginalFilename()))
+                    .normalize().toAbsolutePath();
+            if (!destinationFile.getParent().equals(this.rootPath.toAbsolutePath())) {
+                // This is a security check
+                throw new IllegalArgumentException(
+                        "Tidak Dapat menyimpan file diluar storage yang sudah ditetapkan !!");
+            }
+            Files.createDirectories(this.rootPath);
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, destinationFile,
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+        catch (IOException e) {
+            System.out.println(e.getMessage());
+            throw new IllegalArgumentException("Failed to store file.", e);
+        }
+    }
+
+    public String uploadFile(MultipartFile file) {
+        try {
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            return uploadResult.get("url").toString(); // Ambil URL gambar yang di-upload
+        } catch (IOException e) {
+            throw new RuntimeException("Gagal mengunggah gambar ke Cloudinary", e);
+        }
     }
 }

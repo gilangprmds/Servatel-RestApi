@@ -37,8 +37,8 @@ public class Room {
     private Double pricePerNight;
 
     @OneToMany(mappedBy = "room")
-    private List<Booking> bookings = new ArrayList<>();
-
-    @OneToMany(mappedBy = "room")
     private List<Availability> availabilities = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "room")
+//    private List<RoomImage> roomImages = new ArrayList<>();
 }

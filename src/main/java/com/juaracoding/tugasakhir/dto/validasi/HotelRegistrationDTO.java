@@ -1,6 +1,7 @@
 package com.juaracoding.tugasakhir.dto.validasi;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,4 +18,6 @@ public class HotelRegistrationDTO {
     private List<RoomDTO> rooms = new ArrayList<>();
 
     private String description;
+
+    private List<MultipartFile> hotelImages;
 }
