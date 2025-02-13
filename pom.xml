@@ -36,58 +36,58 @@
             <artifactId>cloudinary-http44</artifactId>
             <version>1.39.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail -->
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>jakarta.mail</artifactId>
-            <version>2.0.1</version>
-        </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.sun.mail</groupId>-->
+<!--            <artifactId>jakarta.mail</artifactId>-->
+<!--            <version>2.0.1</version>-->
+<!--        </dependency>-->
 
 
-        <!--		untuk dokumentasi api -> OPENAPI SWAGGER-->
-        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.6.0</version>
-        </dependency>
+<!--        &lt;!&ndash;		untuk dokumentasi api -> OPENAPI SWAGGER&ndash;&gt;-->
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springdoc</groupId>-->
+<!--            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>-->
+<!--            <version>2.6.0</version>-->
+<!--        </dependency>-->
 
-        <!--		started scurity-->
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
-        </dependency>
+<!--        &lt;!&ndash;		started scurity&ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>javax.xml.bind</groupId>-->
+<!--            <artifactId>jaxb-api</artifactId>-->
+<!--            <version>2.3.1</version>-->
+<!--        </dependency>-->
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-security</artifactId>-->
+<!--            <version>${project.parent.version}</version>-->
+<!--        </dependency>-->
 
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.9.1</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.jsonwebtoken</groupId>-->
+<!--            <artifactId>jjwt</artifactId>-->
+<!--            <version>0.9.1</version>-->
+<!--        </dependency>-->
 
 
-        <!--		end security-->
+<!--        &lt;!&ndash;		end security&ndash;&gt;-->
 
-<!--        started hashing and encryption-->
-        <!-- https://mvnrepository.com/artifact/org.mindrot/jbcrypt -->
-        <dependency>
-            <groupId>org.mindrot</groupId>
-            <artifactId>jbcrypt</artifactId>
-            <version>0.4</version>
-        </dependency>
+<!--&lt;!&ndash;        started hashing and encryption&ndash;&gt;-->
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.mindrot/jbcrypt &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.mindrot</groupId>-->
+<!--            <artifactId>jbcrypt</artifactId>-->
+<!--            <version>0.4</version>-->
+<!--        </dependency>-->
 
-        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on -->
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk18on</artifactId>
-            <version>1.79</version>
-        </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.bouncycastle</groupId>-->
+<!--            <artifactId>bcprov-jdk18on</artifactId>-->
+<!--            <version>1.79</version>-->
+<!--        </dependency>-->
 <!--        ended hashing and encryption-->
         <!--		START LIBRARY REPORT THYMELEAF -->
         <!-- https://mvnrepository.com/artifact/com.itextpdf/html2pdf -->
