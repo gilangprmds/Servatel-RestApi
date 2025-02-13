@@ -80,8 +80,6 @@ public class User implements UserDetails {
     @JoinColumn(name = "RoleIdRole", foreignKey = @ForeignKey(name = "fk-user-to-role"))
     private Role role;
 
-    @OneToMany(mappedBy = "user")
-    private List<Booking> bookingsList = new ArrayList<>();
     @Column(name = "OTP",length = 60)
     private String otp;
 
