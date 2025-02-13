@@ -11,16 +11,16 @@ import org.springframework.context.annotation.PropertySource;
 public class OtherConfig {
 
     private static String enableLogFile;
-//    private static String enableAutomation;
-//
-//    public static String getEnableAutomation() {
-//        return enableAutomation;
-//    }
-//
-//    @Value("${enable.automation}")
-//    private void setEnableAutomation(String enableAutomation) {
-//        OtherConfig.enableAutomation = enableAutomation;
-//    }
+    private static String enableAutomation;
+
+    public static String getEnableAutomation() {
+        return enableAutomation;
+    }
+
+    @Value("${enable.automation}")
+    private void setEnableAutomation(String enableAutomation) {
+        OtherConfig.enableAutomation = enableAutomation;
+    }
 
     public static String getEnableLogFile() {
         return enableLogFile;

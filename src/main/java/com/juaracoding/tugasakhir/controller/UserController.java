@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /*
@@ -25,13 +26,13 @@ public class UserController {
     private UserServiceImpl userServiceImpl;
 
     @PostMapping("")
-    //@PreAuthorize("hasAuthority('User')")
+    @PreAuthorize("hasAuthority('User')")
     public ResponseEntity<Object> save(@Valid @RequestBody ValUserDTO userDTO, HttpServletRequest request){
         return userServiceImpl.save(userServiceImpl.convertToUser(userDTO),request);
     }
 
     @PutMapping("/{id}")
-    //@PreAuthorize("hasAuthority('User')")
+    @PreAuthorize("hasAuthority('User')")
     public ResponseEntity<Object> update(
             @PathVariable(value = "id") Long id,
             @Valid @RequestBody ValUserDTO userDTO, HttpServletRequest request){
@@ -39,7 +40,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    //@PreAuthorize("hasAuthority('User')")
+    @PreAuthorize("hasAuthority('User')")
     public ResponseEntity<Object> delete(
             @PathVariable(value = "id") Long id,
             HttpServletRequest request){

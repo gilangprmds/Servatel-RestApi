@@ -2,7 +2,6 @@
 
 # List Managaer
 Endpoint : GET /users/managers
-
 Response Body(success) :
 ```json
 {
