@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface HotelSearchService {
-    public ResponseEntity<Object> findAllAvailableHotel(Pageable pageable, String city, LocalDate checkinDate, LocalDate checkoutDate, HttpServletRequest request);
+    public ResponseEntity<Object> findAllAvailableHotel(Pageable pageable, String city, LocalDate checkinDate, LocalDate checkoutDate, Integer roomCount, HttpServletRequest request);
 
     public ResponseEntity<Object> findAvailableHotelById(Long hotelId, LocalDate checkinDate, LocalDate checkoutDate, HttpServletRequest request);
 
