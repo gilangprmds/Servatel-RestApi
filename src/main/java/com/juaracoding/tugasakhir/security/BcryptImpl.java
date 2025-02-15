@@ -32,12 +32,12 @@ public class BcryptImpl {
 
     public static void main(String[] args) {
 
-        String strUserName = "Andika.123Paul@1234";
+        String strUserName = "andika.1234Apalah@1234 ";
         System.out.println(hash(strUserName));
         System.out.println(hash(strUserName).length());
 
         System.out.println(verifyHash("906442","$2a$11$VS3bybvoDaSVYDFfhPCiqeOI4zh6kmsIXhlzVwrdMbQ3/qnM32Iay"));
         System.out.println(verifyHash(strUserName,"$2a$11$r9Uj5UuqePNLoYRmj1yUguDie6cZ0Co/3YudQFVvyPqQE7VwIkzJ6"));
-        System.out.println(verifyHash(strUserName,"$2a$11$RKYOQ2OgYMu51KbmhUwZZuDUMwgquAFg1U4n6wbwONjnroKCh5YhC"));
+        System.out.println(verifyHash(strUserName,"$2a$11$YUVY8jlm9v6lrg7Ahr9lEewpKDl8Zj1BIZ6/hXA0mtZG4hcRdy8pm"));
     }
 }
