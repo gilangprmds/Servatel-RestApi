@@ -1,0 +1,28 @@
+DROP TRIGGER IF EXISTS hotelReservation.trgInsertUser;
+GO
+CREATE TRIGGER hotelReservstion.trgInsertUser
+ON hotelReservation.MstUser
+FOR INSERT
+AS
+    INSERT INTO hotelReservation.LogUser(IDUser,Address,Email,FirstName,LastName,NoHp,Password,TanggalLahir,Username,RoleIdRole,CreatedBy,CreatedDate,Flag)
+    SELECT IDUser,Address,Email,FirstName,LastName,NoHp,Password,TanggalLahir,Username,RoleIdRole,CreatedBy,GETDATE(),'I' FROM INSERTED; --virtual table INSERTED
+GO
+
+DROP TRIGGER IF EXISTS hotelReservation.trgUpdateUser;
+GO
+CREATE TRIGGER hotelReservation.trgUpdateUser
+ON hotelReservation.MstUser
+FOR UPDATE
+AS
+    INSERT INTO hotelReservation.LogUser(IDUser,Address,Email,FirstName,LastName,NoHp,Password,TanggalLahir,Username,RoleIdRole,CreatedBy,CreatedDate,Flag)
+    SELECT IDUser,Address,Email,FirstName,LastName,NoHp,Password,TanggalLahir,Username,RoleIdRole,CreatedBy,GETDATE(),'U' FROM DELETED; --virtual table INSERTED
+
+GO
+DROP TRIGGER IF EXISTS hotelReservation.trgDeleteUser;
+GO
+CREATE TRIGGER hotelReservation.trgDeleteUser
+ON hotelReservation.MstUser
+FOR DELETE
+AS
+    INSERT INTO hotelReservation.LogUser(IDUser,Address,Email,FirstName,LastName,NoHp,Password,TanggalLahir,Username,RoleIdRole,CreatedBy,CreatedDate,Flag)
+    SELECT IDUser,Address,Email,FirstName,LastName,NoHp,Password,TanggalLahir,Username,RoleIdRole,CreatedBy,GETDATE(),'D' FROM DELETED; --virtual table INSERTED
