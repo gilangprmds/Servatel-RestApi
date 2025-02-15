@@ -21,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     public Page<User> findByLastNameContainsIgnoreCase(Pageable pageable, String name);
     public Optional<User> findByUsername(String value);
     public Optional<User> findByEmail(String value);
+    public Optional<User> findByOtp(String value);
+    public Optional<User> findByPassword(String value);
     public List<User> findByUsernameOrNoHpOrEmailAndIsRegistered(String value1,String value2, String value3,Boolean value4);
 
     /** update when database migration */
