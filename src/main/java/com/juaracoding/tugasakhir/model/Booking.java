@@ -44,9 +44,8 @@ public class Booking {
     @Column(name = "CheckoutDate", nullable = false)
     private LocalDate checkoutDate;
 
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<BookedRoom> bookedRooms = new ArrayList<>();
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private BookedRoom bookedRooms;
 
     @OneToOne(mappedBy = "booking")
     private Payment payment;

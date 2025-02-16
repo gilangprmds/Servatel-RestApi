@@ -41,52 +41,47 @@ public class AvailabilityServiceImpl implements AvailabilityService {
                 .orElse(room.getRoomCount()); // Consider no record as full availability
     }
 
-    public ResponseEntity<Object> updateAvailabilities(Long hotelId, LocalDate checkinDate, LocalDate checkoutDate, List<RoomSelectionDTO> roomSelections, HttpServletRequest request) {
+    public ResponseEntity<Object> updateAvailabilities(Long hotelId, LocalDate checkinDate, LocalDate checkoutDate,
+                                                       RoomSelectionDTO roomSelections, HttpServletRequest request) {
         try {
             Optional<Hotel> hotel = hotelRepository.findById(hotelId);
             if (!hotel.isPresent()) {
                 return new ResponseHandler().handleResponse("ID Hotel Tidak Ditemukan",
                         HttpStatus.BAD_REQUEST, null, "FVAUT03004", request);
             }
-            roomSelections = roomSelections.stream()
-                    .filter(roomSelection -> roomSelection.getCount() > 0)
-                    .collect(Collectors.toList());
 
-            // Iterate through the room selections made by the user
-            for (RoomSelectionDTO roomSelection : roomSelections) {
-                RoomType roomType = roomSelection.getRoomType();
-                int selectedCount = roomSelection.getCount();
+            RoomType roomType = roomSelections.getRoomType();
+            int selectedCount = roomSelections.getRoomCount();
 
-                // Find the room by roomType for the given hotel
-                Room room = hotel.get().getRooms().stream()
-                        .filter(r -> r.getRoomType() == roomType)
-                        .findFirst()
-                        .orElseThrow(() -> new EntityNotFoundException("Room type not found"));
+            // Find the room by roomType for the given hotel
+            Room room = hotel.get().getRooms().stream()
+                    .filter(r -> r.getRoomType() == roomType)
+                    .findFirst()
+                    .orElseThrow(() -> new EntityNotFoundException("Room type not found"));
 
-                // Iterate through the dates and update or create availability
-                for (LocalDate date = checkinDate; date.isBefore(checkoutDate); date = date.plusDays(1)) {
-                    final LocalDate currentDate = date; // Temporary final variable
-                    Availability availability = availabilityRepository.findByRoomIdAndDate(room.getId(), date)
-                            .orElseGet(() -> Availability.builder()
-                                    .hotel(hotel.get())
-                                    .date(currentDate)
-                                    .room(room)
-                                    .availableRooms(room.getRoomCount())
-                                    .build());
+            // Iterate through the dates and update or create availability
+            for (LocalDate date = checkinDate; date.isBefore(checkoutDate); date = date.plusDays(1)) {
+                final LocalDate currentDate = date; // Temporary final variable
+                Availability availability = availabilityRepository.findByRoomIdAndDate(room.getId(), date)
+                        .orElseGet(() -> Availability.builder()
+                                .hotel(hotel.get())
+                                .date(currentDate)
+                                .room(room)
+                                .availableRooms(room.getRoomCount())
+                                .build());
 
-                    // Reduce the available rooms by the selected count
-                    int updatedAvailableRooms = availability.getAvailableRooms() - selectedCount;
-                    if (updatedAvailableRooms < 0) {
-                        throw new IllegalArgumentException("Selected rooms exceed available rooms for date: " + currentDate);
-                    }
-                    availability.setAvailableRooms(updatedAvailableRooms);
-
-                    availabilityRepository.save(availability);
+                // Reduce the available rooms by the selected count
+                int updatedAvailableRooms = availability.getAvailableRooms() - selectedCount;
+                if (updatedAvailableRooms < 0) {
+                    throw new IllegalArgumentException("Selected rooms exceed available rooms for date: " + currentDate);
                 }
+                availability.setAvailableRooms(updatedAvailableRooms);
+
+                availabilityRepository.save(availability);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-      return null;
+        return null;
     }
 }

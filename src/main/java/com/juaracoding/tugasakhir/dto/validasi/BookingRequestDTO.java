@@ -17,6 +17,6 @@ public class BookingRequestDTO {
     private LocalDate checkinDate;
     private LocalDate checkoutDate;
     private Long durationDays;
-    private List<RoomSelectionDTO> roomSelections = new ArrayList<>();
+    private RoomSelectionDTO roomSelections;
     private BigDecimal totalPrice;
 }

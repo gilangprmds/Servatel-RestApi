@@ -55,7 +55,7 @@ public class HotelController {
 //        } catch (Exception e) {
 //            return ResponseEntity.badRequest().body("Invalid data format");
 //        }
-////        return hotelService.save(hotelService.mapHotelRegistrationDTOtoHotel(hotelRegistrationDTO), file, request);
+    ////        return hotelService.save(hotelService.mapHotelRegistrationDTOtoHotel(hotelRegistrationDTO), file, request);
 //        return null;
 //    }
 
@@ -80,23 +80,23 @@ public class HotelController {
         return hotelService.delete(id, request);
     }
     @GetMapping("/hotels")
-    public ResponseEntity<Object> findAll(
+    public ResponseEntity<Object> findAll(@RequestParam(value = "page") Integer page,
             HttpServletRequest request){
-        Pageable pageable = PageRequest.of(0,2, Sort.by("id"));//asc
+        Pageable pageable = PageRequest.of(page-1,2, Sort.by("id"));//asc
         return hotelService.findAll(pageable,request);
     }
 
     @GetMapping("/manager/hotels/{id}")
     public ResponseEntity<Object> findAllByManagerId( @RequestParam(value = "page") Integer page,
                                                       @PathVariable(value = "id") Long id,
-            HttpServletRequest request){
+                                                      HttpServletRequest request){
         Pageable pageable = PageRequest.of(page-1,2, Sort.by("id"));//asc
         return hotelService.findAllByManagerId(pageable, id, request);
     }
 
     @GetMapping("/hotel/{id}")
     public ResponseEntity<Object> findById( @PathVariable(value = "id") Long id,
-                                                      HttpServletRequest request){
+                                            HttpServletRequest request){
         return hotelService.findById(id, request);
     }
 }

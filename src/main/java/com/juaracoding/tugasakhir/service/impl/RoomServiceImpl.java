@@ -17,11 +17,11 @@ public class RoomServiceImpl implements RoomService {
     private RoomRepository roomRepository;
     @Autowired
     ModelMapper modelMapper;
-////    public Room save(RoomDTO roomDTO) {
-//////        log.info("Attempting to save a new room: {}", roomDTO);
-////        roomRepository.save(roomDTO);
-//////        log.info("Successfully saved room with ID: {}", room.getId());
-////        return room;
+    ////    public Room save(RoomDTO roomDTO) {
+    //////        log.info("Attempting to save a new room: {}", roomDTO);
+    ////        roomRepository.save(roomDTO);
+    //////        log.info("Successfully saved room with ID: {}", room.getId());
+    ////        return room;
 //    }
     public void saveRoom(Room room, Hotel hotel) {
         if(room.getId() != null) {

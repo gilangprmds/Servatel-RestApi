@@ -7,10 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/booking")
@@ -19,8 +17,20 @@ public class BookingController {
     private BookingServiceImpl bookingService;
 
     @PostMapping("/create")
-    public ResponseEntity<Object> createBooking(@RequestBody BookingRequestDTO bookingRequestDTO, HttpServletRequest request) {
-        Long userId = 5L;
-        return bookingService.createBooking(bookingRequestDTO, userId,request);
+    public ResponseEntity<Object> createBooking(@RequestBody BookingRequestDTO bookingRequestDTO,
+                                                HttpServletRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return bookingService.createBooking(bookingRequestDTO, username,request);
+    }
+
+    @GetMapping("/my-bookings")
+    public ResponseEntity<Object> findAllBookingByCustomerUsername(HttpServletRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return bookingService.findBookingsByCustomerUsername(username, request);
+    }
+
+    @GetMapping("/my-booking/{id}")
+    public ResponseEntity<Object> findBookingById(@PathVariable Long id, HttpServletRequest request) {
+        return bookingService.findBookingById(id, request);
     }
 }

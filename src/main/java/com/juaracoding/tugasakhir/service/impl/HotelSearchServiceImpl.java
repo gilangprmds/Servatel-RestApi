@@ -2,6 +2,7 @@ package com.juaracoding.tugasakhir.service.impl;
 
 import com.juaracoding.tugasakhir.config.OtherConfig;
 import com.juaracoding.tugasakhir.dto.respone.RespHotelAvailableDTO;
+import com.juaracoding.tugasakhir.dto.respone.RespRoomDTO;
 import com.juaracoding.tugasakhir.enums.RoomType;
 import com.juaracoding.tugasakhir.handler.ResponseHandler;
 import com.juaracoding.tugasakhir.model.Hotel;
@@ -41,7 +42,7 @@ public class HotelSearchServiceImpl implements HotelSearchService {
 
     @Override
     public ResponseEntity<Object> findAllAvailableHotel(Pageable pageable, String city, LocalDate checkinDate,
-                                                      LocalDate checkoutDate, HttpServletRequest request) {
+                                                        LocalDate checkoutDate, Integer roomCount, HttpServletRequest request) {
         Map<String,Object> mapList;
         List<RespHotelAvailableDTO> respHotelAvailableDTOS;
         try{
@@ -73,14 +74,27 @@ public class HotelSearchServiceImpl implements HotelSearchService {
 
             List<Hotel> combinedList = new ArrayList<>(combinedHotels);
 
-            Page<Hotel> pageHotel = convertListToPagessss(combinedList, pageable);
-
-            respHotelAvailableDTOS= pageHotel.getContent().stream()
+            respHotelAvailableDTOS= combinedList.stream()
                     .map(hotel -> mapHotelToHotelAvailabilityDto(hotel, checkinDate, checkoutDate))
                     .toList();
+            respHotelAvailableDTOS = respHotelAvailableDTOS.stream()
+                    .map(hotel -> {
+                        // Filter room yang maxAvailableRooms >= roomsToBook
+                        List<RespRoomDTO> filteredRooms = hotel.getRooms().stream()
+                                .filter(room -> room.getMaxAvailableRooms() >= roomCount)
+                                .collect(Collectors.toList());
 
-
-            mapList = transformPagination.transformPagination(respHotelAvailableDTOS, pageHotel, "id", "");
+                        // Jika hotel masih punya kamar yang tersedia, simpan ke hasil
+                        if (!filteredRooms.isEmpty()) {
+                            hotel.setRooms(filteredRooms); // Update daftar kamar hotel
+                            return hotel;
+                        }
+                        return null;
+                    })
+                    .filter(Objects::nonNull) // Hapus hotel yang tidak punya kamar tersedia
+                    .collect(Collectors.toList());
+            Page<RespHotelAvailableDTO> pageHotelnew = convertListToPagessss(respHotelAvailableDTOS, pageable);
+            mapList = transformPagination.transformPagination(pageHotelnew.getContent(), pageHotelnew, "id", "");
         } catch (Exception e) {
             LoggingFile.logException("HotelSearchService", "findAllAvailableHotel",e, OtherConfig.getEnableLogFile());
             return new ResponseHandler().handleResponse("Data Gagal Diakses",
@@ -120,14 +134,45 @@ public class HotelSearchServiceImpl implements HotelSearchService {
                 .mapToInt(room -> availabilityService.getMinAvailableRooms(room.getId(), checkinDate, checkoutDate))
                 .max()
                 .orElse(0); // Assume no single rooms if none match the filter
-        respHotelAvailableDTO.setMaxAvailableStandardRooms(maxAvailableStandardRooms);
 
         int maxAvailableDeluxDoubleRooms = hotel.getRooms().stream()
                 .filter(room -> room.getRoomType() == RoomType.DELUX_DOUBLE)
                 .mapToInt(room -> availabilityService.getMinAvailableRooms(room.getId(), checkinDate, checkoutDate))
                 .max()
                 .orElse(0); // Assume no double rooms if none match the filter
-        respHotelAvailableDTO.setMaxAvailableDeluxeDoubleRooms(maxAvailableDeluxDoubleRooms);
+
+        int maxAvailableDeluxTwinRooms = hotel.getRooms().stream()
+                .filter(room -> room.getRoomType() == RoomType.DELUX_TWIN)
+                .mapToInt(room -> availabilityService.getMinAvailableRooms(room.getId(), checkinDate, checkoutDate))
+                .max()
+                .orElse(0); // Assume no double rooms if none match the filter
+
+        int maxAvailableFamilyRooms = hotel.getRooms().stream()
+                .filter(room -> room.getRoomType() == RoomType.FAMILY_ROOM)
+                .mapToInt(room -> availabilityService.getMinAvailableRooms(room.getId(), checkinDate, checkoutDate))
+                .max()
+                .orElse(0); // Assume no double rooms if none match the filter
+
+        for (RespRoomDTO roomDTO: respHotelAvailableDTO.getRooms()){
+            switch (roomDTO.getRoomType()) {
+                case STANDARD_ROOM:
+                    roomDTO.setMaxAvailableRooms(maxAvailableStandardRooms);
+                    roomDTO.setMaxGuest(RoomType.STANDARD_ROOM.getCapacity());
+                    break;
+                case DELUX_DOUBLE:
+                    roomDTO.setMaxAvailableRooms(maxAvailableDeluxDoubleRooms);
+                    roomDTO.setMaxGuest(RoomType.DELUX_DOUBLE.getCapacity());
+                    break;
+                case DELUX_TWIN:
+                    roomDTO.setMaxAvailableRooms(maxAvailableDeluxTwinRooms);
+                    roomDTO.setMaxGuest(RoomType.DELUX_TWIN.getCapacity());
+                    break;
+                case FAMILY_ROOM:
+                    roomDTO.setMaxAvailableRooms(maxAvailableFamilyRooms);
+                    roomDTO.setMaxGuest(RoomType.FAMILY_ROOM.getCapacity());
+                    break;
+            }
+        }
 
         return respHotelAvailableDTO;
     }

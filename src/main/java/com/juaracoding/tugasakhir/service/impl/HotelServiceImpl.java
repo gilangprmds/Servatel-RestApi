@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -81,7 +82,14 @@ public class HotelServiceImpl implements HotelService<Hotel> {
             }
 
 //            addressRepository.save(hotel.getAddress());
-
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            Optional<User> user = userRepository.findByUsername(username);
+            if (!user.isPresent()) {
+                return new ResponseHandler().handleResponse("User Tidak Ditemukan",
+                        HttpStatus.BAD_REQUEST,null,"FVAUT01001", request);
+            }
+            User userDB = user.get();
+            hotel.setUser(userDB);
             // Set bidirectional relationship for rooms
             for (Room room : hotel.getRooms()) {
                 room.setHotel(hotel);
@@ -136,9 +144,9 @@ public class HotelServiceImpl implements HotelService<Hotel> {
             hotelDB.getAddress().setCountry(hotel.getAddress().getCountry());
 
             for (Room room : hotel.getRooms()) {
-              roomServiceImpl.saveRoom(room, hotelDB);
+                roomServiceImpl.saveRoom(room, hotelDB);
             }
-           hotelDB.setDescription(hotel.getDescription());
+            hotelDB.setDescription(hotel.getDescription());
 
             hotelRepository.save(hotelDB);
         }catch (Exception e){

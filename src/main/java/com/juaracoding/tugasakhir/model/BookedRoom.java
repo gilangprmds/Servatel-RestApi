@@ -19,7 +19,7 @@ public class BookedRoom {
     @Column(name = "IDBookedRoom")
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "IDBooking", nullable = false)
     private Booking booking;
 

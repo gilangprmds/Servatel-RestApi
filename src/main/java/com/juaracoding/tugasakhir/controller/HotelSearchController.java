@@ -34,15 +34,17 @@ public class HotelSearchController {
                                                          @RequestParam(value = "city") String city,
                                                          @RequestParam(value = "checkinDate") LocalDate checkinDate,
                                                          @RequestParam(value = "checkoutDate") LocalDate checkoutDate,
+                                                         @RequestParam(value = "roomCount") Integer roomCount,
                                                          HttpServletRequest request) {
         Pageable pageable = PageRequest.of(page-1,2, Sort.by("id"));//asc
-        return hotelSearchService.findAllAvailableHotel(pageable, city, checkinDate, checkoutDate, request);
+        return hotelSearchService.findAllAvailableHotel(pageable, city, checkinDate, checkoutDate, roomCount, request);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> findAvailableHotelById(@PathVariable (value = "id") Long id,
                                                          @RequestParam(value = "checkinDate") LocalDate checkinDate,
                                                          @RequestParam(value = "checkoutDate") LocalDate checkoutDate,
+                                                         @RequestParam(value = "roomCount") Integer roomCount,
                                                          HttpServletRequest request){
         return hotelSearchService.findAvailableHotelById(id, checkinDate, checkoutDate, request);
     }

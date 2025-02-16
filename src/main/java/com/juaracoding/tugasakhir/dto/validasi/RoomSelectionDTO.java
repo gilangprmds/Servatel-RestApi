@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class RoomSelectionDTO {
 
     private RoomType roomType;
-    private int count;
+    private Integer roomCount;
 }

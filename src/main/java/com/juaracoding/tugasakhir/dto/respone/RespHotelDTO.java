@@ -21,7 +21,6 @@ public class RespHotelDTO {
     private AddressDTO address;
     private List<RespRoomDTO> rooms;
     private String description;
-    @JsonProperty("manager-username")
     private String userUsername;
 
     private List<HotelImageDTO> hotelImages;

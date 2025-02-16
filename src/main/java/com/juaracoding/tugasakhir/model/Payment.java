@@ -33,6 +33,7 @@ public class Payment {
     @JoinColumn(name = "IDBooking", nullable = false)
     private Booking booking;
 
+
     @Column(name = "TotalPrice", nullable = false)
     private BigDecimal totalPrice;
 
