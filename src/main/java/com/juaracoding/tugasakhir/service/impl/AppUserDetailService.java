@@ -195,8 +195,9 @@ public class AppUserDetailService implements UserDetailsService {
                     HttpStatus.BAD_REQUEST,
                     null,"X01010",request);
         }
+        otp = random.nextInt(111111,999999);
         userDB.setOtp(BcryptImpl.hash(String.valueOf(otp)));
-        SendMailOTP.verifyRegisOTP("OTP Forgot Password",user.getEmail(),String.valueOf(otp));//perlu di cermati
+        SendMailOTP.verifyOTPForgotPassword("OTP Forgot Password",userDB.getFirstName(),user.getEmail(),String.valueOf(otp));//perlu di cermati
         return new ResponseHandler().handleResponse("CEK OTP DI EMAIL!!",
                 HttpStatus.OK,
                 null,null,request);
@@ -232,7 +233,7 @@ public class AppUserDetailService implements UserDetailsService {
                     HttpStatus.BAD_REQUEST,
                     null,"X01009",request);
         }
-        Optional<User> optionalUser = userRepo.findByUsername(user.getUsername());
+        Optional<User> optionalUser = userRepo.findByUsername(user.getEmail());
         User userDB = optionalUser.get();
         if (!optionalUser.isPresent()) {
             return new ResponseHandler().handleResponse("PASSWORD TIDAK VALID",
@@ -245,10 +246,12 @@ public class AppUserDetailService implements UserDetailsService {
                     null,"X01008",request);
 
         }
-        userDB.setPassword(BcryptImpl.hash(user.getUsername()+user.getPasswordBaru()));
+        userDB.setPassword(BcryptImpl.hash(user.getEmail()+user.getPasswordBaru()));
 
         return null;
     }
+
+
 
 
     @Override

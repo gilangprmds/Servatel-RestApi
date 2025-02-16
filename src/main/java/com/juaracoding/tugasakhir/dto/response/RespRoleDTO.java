@@ -20,8 +20,8 @@ import java.util.List;
 @Getter
 @Setter
 public class RespRoleDTO {
-        private Long id;
-        private RoleType role;
-        @JsonProperty("lt-menu")
-        private List<RespMenuDTO> ltMenu;
+        //private Long id;
+        private RoleType roleType;
+        //@JsonProperty("lt-menu")
+        //private List<RespMenuDTO> ltMenu;
 }

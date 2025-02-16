@@ -21,6 +21,9 @@ import java.util.Random;
 @RequestMapping("/other")
 public class OthersController {
 
+
+
+
 }
 
 

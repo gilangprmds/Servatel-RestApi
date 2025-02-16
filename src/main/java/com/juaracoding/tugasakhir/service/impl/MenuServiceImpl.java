@@ -70,7 +70,7 @@ public class MenuServiceImpl implements IService<Menu>,IReportForm<Menu> {
             if(menu==null){
                 return GlobalResponse.dataTidakValid("FVAUT02001",request);
             }
-            menu.setCreatedBy(token.get("firstName").toString());
+            menu.setCreatedBy(token.get("username").toString());
             menu.setCreatedDate(new Date());
             menuRepo.save(menu);
         }catch (Exception e){
@@ -94,7 +94,7 @@ public class MenuServiceImpl implements IService<Menu>,IReportForm<Menu> {
                 return GlobalResponse.dataTidakDitemukan(request);
             }
             Menu menuDB = menuOptional.get();
-            menuDB.setUpdatedBy(token.get("firstName").toString());
+            menuDB.setUpdatedBy(token.get("username").toString());
             menuDB.setUpdatedDate(new Date());
             menuDB.setName(menu.getName());
             menuDB.setPath(menu.getPath());
@@ -310,7 +310,7 @@ public class MenuServiceImpl implements IService<Menu>,IReportForm<Menu> {
         map.put("timestamp",new Date());
         map.put("totalData",intRespMenuDTOList);
         map.put("listContent",listMap);
-        map.put("username",token.get("firstName"));
+        map.put("username",token.get("username"));
         context.setVariables(map);
         strHtml = springTemplateEngine.process("global-report",context);
         pdfGenerator.htmlToPdf(strHtml,"menu",response);
@@ -329,7 +329,6 @@ public class MenuServiceImpl implements IService<Menu>,IReportForm<Menu> {
             tableMenuDTO.setId(menu.getId());
             tableMenuDTO.setName(menu.getName());
             tableMenuDTO.setPath(menu.getPath());
-            //tableMenuDTO.setNamaGroupMenu(menu.getGroupMenu()==null?"":menu.getGroupMenu().getNamaGroupMenu());
             list.add(tableMenuDTO);
         }
         return list;

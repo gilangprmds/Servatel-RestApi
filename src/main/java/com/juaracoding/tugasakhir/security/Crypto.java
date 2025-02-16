@@ -68,8 +68,12 @@ public class Crypto {
         System.out.println("Encryption Result : "+performEncrypt(strToEncrypt));
 
         String strToDecrypt = "c02ba3d5895193b023388229063bbd91";//put text to decrypt in here
+        String strToDecryptUsername = "cdf02c205039febae3db772a7fa047121cf97b93d879387115ec2a496e3d7582";//put text to decrypt in here
+        String strToDecryptPassword = "c88099fb4a86cdebf0af0b524ee58c745a9600406dfe6db6b9e6cb0ffe87b2e6";//put text to decrypt in here
 //        String decriptionResult = new Crypto().performDecrypt(strToDecrypt);
         System.out.println("Decryption Result : "+performDecrypt(strToDecrypt));
+        System.out.println("Decryption Result username : "+performDecrypt(strToDecryptUsername));
+        System.out.println("Decryption Result password : "+performDecrypt(strToDecryptPassword));
         System.out.println("encrypt Result : "+performEncrypt(strToEncrypt));
         System.out.println("encypt Result  email: "+performEncrypt("avivawulantari69@gmail.com"));
         System.out.println("encypt Result pwd : "+performEncrypt("txzwaflkjhexvfie"));

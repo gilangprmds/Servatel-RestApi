@@ -69,7 +69,7 @@ public class RoleServiceImpl implements IService<Role>,IReportForm<Role>{
             if(role==null){
                 return GlobalResponse.dataTidakValid("FVAUT03001",request);
             }
-            role.setCreatedBy(token.get("firstName").toString());
+            role.setCreatedBy(token.get("username").toString());
             role.setCreatedDate(new Date());
             role.setLtMenu(role.getLtMenu());
             roleRepo.save(role);
@@ -93,7 +93,7 @@ public class RoleServiceImpl implements IService<Role>,IReportForm<Role>{
                 return GlobalResponse.dataTidakDitemukan(request);
             }
             Role roleDB = roleOptional.get();
-            roleDB.setUpdatedBy(token.get("firstName").toString());
+            roleDB.setUpdatedBy(token.get("username").toString());
             roleDB.setUpdatedDate(new Date());
             roleDB.setRoleType(role.getRoleType());
             roleDB.setLtMenu(role.getLtMenu());
@@ -304,7 +304,7 @@ public class RoleServiceImpl implements IService<Role>,IReportForm<Role>{
         map.put("timestamp",new Date());
         map.put("totalData",intRespRoleDTOList);
         map.put("listContent",listMap);
-        map.put("username",token.get("firstName"));
+        map.put("username",token.get("username"));
         context.setVariables(map);
         strHtml = springTemplateEngine.process("global-report",context);
         pdfGenerator.htmlToPdf(strHtml,"role",response);

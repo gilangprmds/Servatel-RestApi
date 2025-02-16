@@ -36,7 +36,7 @@ public class JwtUtility {
         Claims claims = getAllClaimsFromToken(token);
         mapz.put("userId",claims.get("uid"));
         mapz.put("username",claims.get("un"));
-        mapz.put("email",claims.get("ml"));//untuk email
+        mapz.put("template-email",claims.get("ml"));//untuk email
         mapz.put("firstName",claims.get("fn"));
         mapz.put("lastName",claims.get("ln"));
         mapz.put("noHp",claims.get("pn"));

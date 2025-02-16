@@ -31,9 +31,9 @@ public class ValRoleDTO {
     @JsonProperty("role-type")
     private RoleType roleType;
 
-    @NotNull(message = "Menu Wajib DIISI")
-    @JsonProperty("lt-menu")
-    private List<RespMenuDTO> ltMenu;
+//    @NotNull(message = "Menu Wajib DIISI")
+//    @JsonProperty("lt-menu")
+//    private List<RespMenuDTO> ltMenu;
 
 
 

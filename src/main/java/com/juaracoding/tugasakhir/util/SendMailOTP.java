@@ -24,7 +24,7 @@ public class SendMailOTP {
             strVerify[0] = subject;
             strVerify[1] = firstName;
             strVerify[2] = token;
-            String  strContent = new ReadTextFileSB("ver_regis.html").getContentFile();
+            String  strContent = new ReadTextFileSB("ver-regis.html").getContentFile();
             strContent = strContent.replace("#JKVM3NH",strVerify[0]);//Kepentingan
             strContent = strContent.replace("XF#31NN",strVerify[1]);//firstName
             strContent = strContent.replace("8U0_1GH$",strVerify[2]);//TOKEN kondisi di hash
@@ -48,13 +48,13 @@ public class SendMailOTP {
         }
     }
 
-    public static void verifyRegisOTP(String subject,String email,String link) {
+    public static void verifyOTPForgotPassword(String subject,String firstName,String email, String token) {
         try{
-            String[] strVerify = new String[2];
+            String[] strVerify = new String[3];
             strVerify[0] = subject;
-            strVerify[1] = email;
-            strVerify[2] = link;
-            String  strContent = new ReadTextFileSB("ver_regis.html").getContentFile();
+            strVerify[1] = firstName;
+            strVerify[2] = token;
+            String  strContent = new ReadTextFileSB("ver-forgot-password.html").getContentFile();
             strContent = strContent.replace("#JKVM3NH",strVerify[0]);//Kepentingan
             strContent = strContent.replace("XF#31NN",strVerify[1]);//firstName
             strContent = strContent.replace("8U0_1GH$",strVerify[2]);//link

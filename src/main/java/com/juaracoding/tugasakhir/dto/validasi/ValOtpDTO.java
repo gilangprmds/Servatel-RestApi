@@ -19,6 +19,8 @@ Version 1.0
 @Setter
 @Getter
 public class ValOtpDTO {
+
+
     @NotNull
     @NotBlank
     @NotEmpty

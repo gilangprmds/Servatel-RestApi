@@ -24,9 +24,9 @@ public class ValChangePasswordDTO {
     @NotNull
     @NotBlank
     @NotEmpty
-    @Pattern(regexp = "^([a-z0-9\\.]{8,16})$",
-            message = "Format Huruf kecil ,numeric dan titik saja min 8 max 25 karakter, contoh : paulch.123")
-    private String username;
+    @Pattern(regexp = "^(?=.{1,256})(?=.{1,64}@.{1,255}$)(?:(?![.])[a-zA-Z0-9._%+-]+(?:(?<!\\\\)[.][a-zA-Z0-9-]+)*?)@[a-zA-Z0-9.-]+(?:\\.[a-zA-Z]{2,50})+$",
+            message = "Format tidak valid contoh : user_name123@sub.domain.com")
+    private String email;
 
     @NotNull
     @NotEmpty

@@ -77,7 +77,7 @@ public class User implements UserDetails {
 //    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
 //    private List<Booking> bookingsList = new ArrayList<>();
     @ManyToOne
-    @JoinColumn(name = "RoleIdRole", foreignKey = @ForeignKey(name = "fk-user-to-role"))
+    @JoinColumn(name = "IDRole", foreignKey = @ForeignKey(name = "fk-user-to-role"))
     private Role role;
 
     @Column(name = "OTP",length = 60)

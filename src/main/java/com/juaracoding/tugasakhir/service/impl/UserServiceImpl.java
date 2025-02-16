@@ -6,8 +6,6 @@ import com.juaracoding.tugasakhir.core.IService;
 import com.juaracoding.tugasakhir.dto.response.RespUserDTO;
 import com.juaracoding.tugasakhir.dto.table.TableUserDTO;
 import com.juaracoding.tugasakhir.dto.validasi.ValUserDTO;
-import com.juaracoding.tugasakhir.model.Role;
-import com.juaracoding.tugasakhir.enums.RoleType;
 import com.juaracoding.tugasakhir.handler.ResponseHandler;
 import com.juaracoding.tugasakhir.model.User;
 import com.juaracoding.tugasakhir.repository.UserRepository;
@@ -29,7 +27,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /*
@@ -82,14 +79,14 @@ public class UserServiceImpl implements IService<User> {
                 return GlobalResponse.dataTidakValid("FVAUT02001",request);
             }
 
-            if(user.getRole()==null){
-                Role role = new Role();
-                role.setId(2L);
-                user.setRole(role);
-            }
+//            if(user.getRole()==null){
+//                Role role = new Role();
+//                role.setId(2L);
+//                user.setRole(role);
+//            }
             user.setIsRegistered(true);
             user.setPassword(BcryptImpl.hash(user.getUsername()+user.getPassword()));
-            user.setCreatedBy(token.get("firstName").toString());
+            user.setCreatedBy(token.get("username").toString());
             user.setCreatedDate(new Date());
             userRepo.save(user);
         }catch (Exception e){
@@ -112,7 +109,7 @@ public class UserServiceImpl implements IService<User> {
                 return GlobalResponse.dataTidakDitemukan(request);
             }
             User userDB = userOptional.get();
-            userDB.setUpdatedBy(token.get("firstName")+token.get("lastName").toString());
+            userDB.setUpdatedBy(token.get("username")+token.get("lastName").toString());
             userDB.setUpdatedDate(new Date());
             userDB.setFirstName(user.getFirstName());
             userDB.setLastName(user.getLastName());
@@ -157,13 +154,13 @@ public class UserServiceImpl implements IService<User> {
         if(list.isEmpty()){
             return GlobalResponse.dataTidakDitemukan(request);
         }
-
         Map<String, Object> mapList = transformPagination.transformPagination(listDTO,page,"id","");
         return GlobalResponse.dataResponseList(mapList,request);
     }
 
     @Override
     public ResponseEntity<Object> findById(Long id, HttpServletRequest request) {
+
         RespUserDTO respUserDTO;
         try{
             Optional<User> userOptional = userRepo.findById(id);
@@ -192,7 +189,7 @@ public class UserServiceImpl implements IService<User> {
             case "address": page = userRepo.findByAddressContainsIgnoreCase(pageable,value);break;
             case "email": page = userRepo.findByEmailContainsIgnoreCase(pageable,value);break;
             case "username": page = userRepo.findByUsernameContainsIgnoreCase(pageable,value);break;
-            case "password": page = userRepo.findByPasswordContainsIgnoreCase(pageable,value);break;
+            //case "password": page = userRepo.findByPasswordContainsIgnoreCase(pageable,value);break;
             case "umur": page = userRepo.cariUmur(pageable,value);break;
             default : page = userRepo.findAll(pageable);break;
         }

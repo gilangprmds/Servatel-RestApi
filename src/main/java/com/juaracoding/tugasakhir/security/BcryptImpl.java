@@ -32,7 +32,7 @@ public class BcryptImpl {
 
     public static void main(String[] args) {
 
-        String strUserName = "andika.1234Apalah@1234 ";
+        String strUserName = "akudandia.413Paul@1234";
         System.out.println(hash(strUserName));
         System.out.println(hash(strUserName).length());
 
