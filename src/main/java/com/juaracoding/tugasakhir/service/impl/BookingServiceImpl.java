@@ -40,7 +40,9 @@ public class BookingServiceImpl {
     private AvailabilityServiceImpl availabilityService;
 
     @Transactional
-    public ResponseEntity<Object> createBooking(BookingRequestDTO bookingRequestDTO, String username, HttpServletRequest request) {
+    public ResponseEntity<Object> createBooking(BookingRequestDTO bookingRequestDTO, String username,
+                                                HttpServletRequest request) {
+        RespBookingDTO respBookingDTO;
         try {
             validateBookingDate(bookingRequestDTO, request);
             Optional<User> user = userRepository.findByUsername(username);
@@ -62,14 +64,14 @@ public class BookingServiceImpl {
             availabilityService.updateAvailabilities(bookingRequestDTO.getHotelId(),
                     bookingRequestDTO.getCheckinDate(), bookingRequestDTO.getCheckoutDate(),
                     bookingRequestDTO.getRoomSelections(), request);
-
+            respBookingDTO = mapBookingModelToBookingDto(savedBooking);
         } catch (Exception e) {
             LoggingFile.logException("BookingService", "createBooking", e, OtherConfig.getEnableLogFile());
             return new ResponseHandler().handleResponse("Data Gagal Disimpan",
                     HttpStatus.INTERNAL_SERVER_ERROR, null, "FEAUT01001", request);
         }
         return new ResponseHandler().handleResponse("OK",
-                HttpStatus.CREATED, null, null, request);
+                HttpStatus.CREATED, respBookingDTO, null, request);
     }
 
     public ResponseEntity<Object> findBookingsByCustomerUsername(String username, HttpServletRequest request) {
@@ -165,7 +167,7 @@ public class BookingServiceImpl {
                 .hotelName(booking.getHotel().getName())
                 .hotelAddress(addressDto)
                 .customerName(customerUser.getFirstName() + " " + customerUser.getLastName())
-                .customerEmail(customerUser.getUsername())
+                .customerEmail(customerUser.getEmail())
                 .paymentStatus(booking.getPayment().getPaymentStatus())
                 .paymentMethod(booking.getPayment().getPaymentMethod())
                 .build();
