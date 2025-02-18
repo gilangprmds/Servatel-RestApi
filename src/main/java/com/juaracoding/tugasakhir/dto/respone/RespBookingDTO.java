@@ -2,7 +2,7 @@ package com.juaracoding.tugasakhir.dto.respone;
 
 import com.juaracoding.tugasakhir.dto.validasi.AddressDTO;
 import com.juaracoding.tugasakhir.dto.validasi.RoomSelectionDTO;
-import com.juaracoding.tugasakhir.enums.PaymentMethod;
+//import com.juaracoding.tugasakhir.enums.PaymentMethod;
 import com.juaracoding.tugasakhir.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class RespBookingDTO {
     private Long id;
     private String confirmationNumber;
-    private LocalDateTime bookingDate;
+    private LocalDate bookingDate;
     private Long customerId;
     private Long hotelId;
     private LocalDate checkinDate;
@@ -33,5 +33,6 @@ public class RespBookingDTO {
     private String customerName;
     private String customerEmail;
     private PaymentStatus paymentStatus;
-    private PaymentMethod paymentMethod;
+    private String paymentMethod;
+    private String token;
 }

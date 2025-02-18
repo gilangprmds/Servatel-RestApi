@@ -19,7 +19,7 @@ public class TableUserDTO {
 
     private Long id;
     private String username;
-    private String password;
+//    private String password;
     private String email;
     private String address;
     private String noHp;

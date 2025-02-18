@@ -111,6 +111,7 @@ public class UserServiceImpl implements IService<User> {
                 return GlobalResponse.dataTidakDitemukan(request);
             }
             User userDB = userOptional.get();
+            userDB.setUsername(user.getUsername());
             userDB.setUpdatedBy(token.get("username")+token.get("lastName").toString());
             userDB.setUpdatedDate(new Date());
             userDB.setFirstName(user.getFirstName());
@@ -118,9 +119,9 @@ public class UserServiceImpl implements IService<User> {
             userDB.setAddress(user.getAddress());
             userDB.setNoHp(user.getNoHp());
             userDB.setEmail(user.getEmail());
-            userDB.setPassword(BcryptImpl.hash(userDB.getUsername()+ userDB.getTanggalLahir().format(DateTimeFormatter.ofPattern("yyyyMMdd"))));
-            userDB.setRole(user.getRole());//ini relasi nya
-
+//            userDB.setPassword(BcryptImpl.hash(userDB.getUsername()+ userDB.getTanggalLahir().format(DateTimeFormatter.ofPattern("yyyyMMdd"))));
+//            userDB.setRole(user.getRole());//ini relasi nya
+            userRepo.save(userDB);
         }catch (Exception e){
             LoggingFile.logException("UserService","update --> Line 75",e, OtherConfig.getEnableLogFile());
             return GlobalResponse.dataGagalDiubah("FEAUT02011",request);
@@ -304,7 +305,7 @@ public class UserServiceImpl implements IService<User> {
             tableUserDTO.setRoleType(user.getRole().getRoleType());
             tableUserDTO.setNoHp(user.getNoHp());
             tableUserDTO.setAddress(user.getAddress());
-            tableUserDTO.setPassword(user.getPassword());
+//            tableUserDTO.setPassword(user.getPassword());
             tableUserDTO.setEmail(user.getEmail());
             tableUserDTO.setUsername(user.getUsername());
             tableUserDTO.setFirstName(user.getFirstName());

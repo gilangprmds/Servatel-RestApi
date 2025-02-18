@@ -2,7 +2,7 @@ package com.juaracoding.tugasakhir.service.impl;
 
 import com.juaracoding.tugasakhir.dto.validasi.BookingRequestDTO;
 import com.juaracoding.tugasakhir.enums.Currency;
-import com.juaracoding.tugasakhir.enums.PaymentMethod;
+//import com.juaracoding.tugasakhir.enums.PaymentMethod;
 import com.juaracoding.tugasakhir.enums.PaymentStatus;
 import com.juaracoding.tugasakhir.model.Booking;
 import com.juaracoding.tugasakhir.model.Payment;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PaymentService {
@@ -40,6 +41,26 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
+    public void updatePaymentStatus(Long orderId, String transactionStatus, String paymentMethod) {
+        Payment payment = paymentRepository.findByBookingId(orderId)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        switch (transactionStatus) {
+            case "settlement":
+                payment.setPaymentStatus(PaymentStatus.COMPLETED);
+                payment.setPaymentMethod(paymentMethod);
+                break;
+            case "pending":
+                payment.setPaymentStatus(PaymentStatus.PENDING);
+                break;
+            case "expire":
+            case "cancel":
+                payment.setPaymentStatus(PaymentStatus.FAILED);
+                break;
+        }
+        paymentRepository.save(payment);
+    }
+
     public String createTransaction(Long bookingId, String email, Double totalPrice) {
 //        MidtransSnapApi snapApi = new MidtransSnapApi(midtransConfig);
         Config coreApiConfigOptions = Config.builder()
@@ -51,7 +72,7 @@ public class PaymentService {
 
         // Membuat parameter transaksi
         Map<String, Object> transactionDetails = new HashMap<>();
-        transactionDetails.put("order_id", "ORDER-" + bookingId);
+        transactionDetails.put("order_id", bookingId);
         transactionDetails.put("gross_amount", totalPrice);
 
         Map<String, Object> customerDetails = new HashMap<>();
@@ -63,7 +84,11 @@ public class PaymentService {
 
         try {
             JSONObject snapResponse = snapApi.createTransaction(transaction);
-            return snapResponse.getString("token"); // Ambil Snap Token dari response
+            Payment payment = paymentRepository.findByBookingId(bookingId)
+                    .orElseThrow(() -> new RuntimeException("Payment not found"));
+            payment.setToken(snapResponse.getString("token"));
+            paymentRepository.save(payment);
+            return snapResponse.getString("token");// Ambil Snap Token dari response
         } catch (MidtransError e) {
             e.printStackTrace();
             return null;

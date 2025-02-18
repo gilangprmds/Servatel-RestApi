@@ -16,6 +16,6 @@ public interface HotelService<T> {
     public ResponseEntity<Object> findAll(Pageable pageable, HttpServletRequest request);//031-040
     public ResponseEntity<Object> findById(Long id, HttpServletRequest request);//041-050
     public ResponseEntity<Object> findByParam(Pageable pageable,String columnName, String value, HttpServletRequest request);//051-060
-    public ResponseEntity<Object> findAllByManagerId(Pageable pageable,Long id, HttpServletRequest request);
+    public ResponseEntity<Object> findAllByManagerId(Pageable pageable, String username, HttpServletRequest request);
     public Hotel mapHotelRegistrationDTOtoHotel(HotelRegistrationDTO hotelRegistrationDTO);
 }
