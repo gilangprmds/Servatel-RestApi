@@ -4,8 +4,8 @@ package com.juaracoding.tugasakhir.service.impl;
 import com.juaracoding.tugasakhir.config.OtherConfig;
 import com.juaracoding.tugasakhir.core.IService;
 import com.juaracoding.tugasakhir.dto.response.RespUserDTO;
+import com.juaracoding.tugasakhir.dto.table.TableUserByRoleDTO;
 import com.juaracoding.tugasakhir.dto.table.TableUserDTO;
-import com.juaracoding.tugasakhir.dto.validasi.ValChangePasswordDTO;
 import com.juaracoding.tugasakhir.dto.validasi.ValSetChangePasswordDTO;
 import com.juaracoding.tugasakhir.dto.validasi.ValUserDTO;
 import com.juaracoding.tugasakhir.handler.ResponseHandler;
@@ -180,6 +180,18 @@ public class UserServiceImpl implements IService<User> {
                 respUserDTO,null,request);
     }
 
+//    public ResponseEntity<Object> findByRoleId(Pageable pageable, Long id, HttpServletRequest request){
+//
+//        Page<User> page = userRepo.findByRole_Id(pageable,id);
+//        List<User> list = page.getContent();
+//
+//        if(list.isEmpty()){
+//            return GlobalResponse.dataTidakDitemukan(request);
+//        }
+//        List<TableUserByRoleDTO> listDTO = convertToTableUserByRoleDTO(list);
+//        return null;
+//    }
+
     @Override
     public ResponseEntity<Object> findByParam(Pageable pageable, String columnName, String value, HttpServletRequest request) {
         Page<User> page = null;
@@ -303,6 +315,20 @@ public class UserServiceImpl implements IService<User> {
         }
         return tableUserDTOList;
     }
+
+//    public List<TableUserDTO> convertToTableUserByRoleDTO(List<User> userList){
+//        List<TableUserByRoleDTO> tableUserByRoleDTOList = new ArrayList<>();
+//        TableUserByRoleDTO tableUserDTO = null;
+//        for(User user : userList){
+//            tableUserDTO = new TableUserByRoleDTO();
+//            tableUserDTO.setId(user.getId());
+//            tableUserDTO.setUsername(user.getUsername());
+//            tableUserDTO.setFirstName(user.getFirstName());
+//            tableUserDTO.setLastName(user.getLastName());
+//            tableUserByRoleDTOList.add(tableUserDTO);
+//        }
+//        return tableUserByRoleDTOList;
+//    }
 
     public User convertToUser(ValUserDTO userDTO){
         return modelMapper.map(userDTO,User.class);

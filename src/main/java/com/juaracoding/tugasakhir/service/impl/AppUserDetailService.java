@@ -210,14 +210,14 @@ public class AppUserDetailService implements UserDetailsService {
                     HttpStatus.BAD_REQUEST,
                     null,"X01009",request);
         }
-        Optional<User> optionalUser = userRepo.findByOtp(user.getOtp());
+        Optional<User> optionalUser = userRepo.findByEmail(user.getEmail());
         if (!optionalUser.isPresent()) {
-            return new ResponseHandler().handleResponse("OTP TIDAK VALID",
+            return new ResponseHandler().handleResponse("EMAIL TIDAK VALID",
                     HttpStatus.BAD_REQUEST,
                     null,"X01008",request);
         }
         User userDB = optionalUser.get();
-        if(!user.getOtp().equals(userDB.getOtp())){//PERLU VALIDASI INI TIDAK PAK
+        if(!BcryptImpl.verifyHash(user.getOtp(),userDB.getOtp())){//PERLU VALIDASI INI TIDAK PAK
             return new ResponseHandler().handleResponse("OTP TIDAK VALID",
                     HttpStatus.BAD_REQUEST,
                     null,"X01010",request);
@@ -234,7 +234,7 @@ public class AppUserDetailService implements UserDetailsService {
                     HttpStatus.BAD_REQUEST,
                     null,"X01009",request);
         }
-        Optional<User> optionalUser = userRepo.findByUsername(user.getEmail());
+        Optional<User> optionalUser = userRepo.findByEmail(user.getEmail());
         User userDB = optionalUser.get();
         if (!optionalUser.isPresent()) {
             return new ResponseHandler().handleResponse("PASSWORD TIDAK VALID",

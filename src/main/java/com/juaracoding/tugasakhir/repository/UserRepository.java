@@ -18,7 +18,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     public Page<User> findByEmailContainsIgnoreCase(Pageable pageable, String name);
     public Page<User> findByNoHpContainsIgnoreCase(Pageable pageable, String name);
     public Page<User> findByFirstNameContainsIgnoreCase(Pageable pageable, String name);
+    public Page<User> findByRole_Id(Pageable pageable,Long id);
+
     public Page<User> findByLastNameContainsIgnoreCase(Pageable pageable, String name);
+    //    @Query(value = "SELECT u FROM User u WHERE lower(u.role.roleType) LIKE lower(concat('%',?1,'%'))")
+    //    public Page<User> cariRoleType(Pageable pageable, String nama);
+
     public Optional<User> findByUsername(String value);
     public Optional<User> findByEmail(String value);
     public Optional<User> findByOtp(String value);
