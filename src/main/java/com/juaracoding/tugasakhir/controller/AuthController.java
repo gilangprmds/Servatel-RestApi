@@ -13,6 +13,7 @@ Version 1.0
 import com.juaracoding.tugasakhir.dto.validasi.*;
 import com.juaracoding.tugasakhir.mapper.ChangePasswordMapper;
 import com.juaracoding.tugasakhir.service.impl.AppUserDetailService;
+import com.juaracoding.tugasakhir.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class AuthController {
 
     @Autowired
     AppUserDetailService appUserDetailService;
+
+    @Autowired
+    UserServiceImpl userServiceImpl;
 
     @Autowired
     ChangePasswordMapper changePasswordMapper;
@@ -69,6 +73,12 @@ public class AuthController {
     public ResponseEntity<Object> changePassword(@Valid @RequestBody ValChangePasswordDTO valChangePasswordDTO,
                                                   HttpServletRequest request){
         return appUserDetailService.changePassword(valChangePasswordDTO, request);
+    }
+
+    @PostMapping("/new-otp")
+    public ResponseEntity<Object> newOtp(@RequestParam(value = "email") String email,
+                                         HttpServletRequest request){
+        return appUserDetailService.newOtp(email,request);
     }
 
 //    /** ini buat coret-coretan aja */

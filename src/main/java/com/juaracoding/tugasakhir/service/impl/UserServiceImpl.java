@@ -5,6 +5,8 @@ import com.juaracoding.tugasakhir.config.OtherConfig;
 import com.juaracoding.tugasakhir.core.IService;
 import com.juaracoding.tugasakhir.dto.response.RespUserDTO;
 import com.juaracoding.tugasakhir.dto.table.TableUserDTO;
+import com.juaracoding.tugasakhir.dto.validasi.ValChangePasswordDTO;
+import com.juaracoding.tugasakhir.dto.validasi.ValSetChangePasswordDTO;
 import com.juaracoding.tugasakhir.dto.validasi.ValUserDTO;
 import com.juaracoding.tugasakhir.handler.ResponseHandler;
 import com.juaracoding.tugasakhir.model.User;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
@@ -65,10 +68,9 @@ public class UserServiceImpl implements IService<User> {
     @Autowired
     private SpringTemplateEngine springTemplateEngine;
 
+    private Random random = new Random();
+
     private StringBuilder sbuild = new StringBuilder();
-
-
-
 
 
     @Override
@@ -80,7 +82,7 @@ public class UserServiceImpl implements IService<User> {
             }
 
 //            if(user.getRole()==null){
-//                Role role = new Role();
+//                Role role = new Role();\cv
 //                role.setId(2L);
 //                user.setRole(role);
 //            }
@@ -202,6 +204,51 @@ public class UserServiceImpl implements IService<User> {
         Map<String, Object> mapList = transformPagination.transformPagination(listDTO,page,columnName,value);
         return GlobalResponse.dataResponseList(mapList,request);
     }
+
+    public ResponseEntity<Object>newOtp(HttpServletRequest request) throws UsernameNotFoundException {
+        Integer otp = null;
+        Map<String,Object> token = GlobalFunction.extractToken(request);
+        Optional<User> optionalUser = userRepo.findByUsername(token.get("username").toString());
+
+        User userDB = optionalUser.get();
+        otp = random.nextInt(111111,999999);
+        userDB.setOtp(BcryptImpl.hash(String.valueOf(otp)));
+        SendMailOTP.verifyNewOtp("OTP Ganti Password",userDB.getFirstName(),userDB.getEmail(),String.valueOf(otp));
+        return new ResponseHandler().handleResponse("OTP Berhasil Dikirim",
+                HttpStatus.OK,
+                null,null,request);
+    }
+
+    public ResponseEntity<Object> setChangePassword(ValSetChangePasswordDTO user, HttpServletRequest request) throws UsernameNotFoundException {
+        Map<String,Object> token = GlobalFunction.extractToken(request);
+        if (user == null) {
+            return new ResponseHandler().handleResponse("DATA TIDAK VALID",
+                    HttpStatus.BAD_REQUEST,
+                    null, "X01009", request);
+        }
+        Optional<User> optionalUser = userRepo.findByUsername(token.get("username").toString());
+        User userDB = optionalUser.get();
+        if (!userDB.getOtp().equals(user.getOtp())) {
+            return new ResponseHandler().handleResponse("OTP TIDAK VALID",
+                    HttpStatus.BAD_REQUEST,
+                    null, "X01008", request);
+        }
+        if (!optionalUser.isPresent()) {
+            return new ResponseHandler().handleResponse("USERNAME TIDAK VALID",
+                    HttpStatus.BAD_REQUEST,
+                    null, "X01008", request);
+        }
+        if (!user.getPasswordBaru().equals(user.getKonfirmasiPasswordBaru())) {
+            return new ResponseHandler().handleResponse("PASSWORD TIDAK VALID",
+                    HttpStatus.BAD_REQUEST,
+                    null, "X01008", request);
+        }
+        userDB.setPassword(BcryptImpl.hash(userDB.getUsername()+user.getPasswordBaru()));
+        return new ResponseHandler().handleResponse("Password Berhasil Diubah",
+                HttpStatus.OK,
+                null,null,request);
+    }
+
 
 //    @Transactional
 //    public ResponseEntity<Object> uploadImage(String username,MultipartFile file,HttpServletRequest request){

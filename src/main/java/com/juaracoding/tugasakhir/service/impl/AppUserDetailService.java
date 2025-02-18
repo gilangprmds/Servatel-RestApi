@@ -19,6 +19,7 @@ import com.juaracoding.tugasakhir.repository.UserRepository;
 import com.juaracoding.tugasakhir.security.BcryptImpl;
 import com.juaracoding.tugasakhir.security.Crypto;
 import com.juaracoding.tugasakhir.security.JwtUtility;
+import com.juaracoding.tugasakhir.util.GlobalFunction;
 import com.juaracoding.tugasakhir.util.SendMailOTP;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -246,9 +247,36 @@ public class AppUserDetailService implements UserDetailsService {
                     null,"X01008",request);
 
         }
-        userDB.setPassword(BcryptImpl.hash(user.getEmail()+user.getPasswordBaru()));
+        userDB.setPassword(BcryptImpl.hash(userDB.getUsername()+user.getPasswordBaru()));
+        return new ResponseHandler().handleResponse("Password Berhasil Diubah",
+                HttpStatus.OK,
+                null,null,request);
+    }
 
-        return null;
+//    public ResponseEntity<Object>newOtp(HttpServletRequest request) throws UsernameNotFoundException {
+//        Integer otp = null;
+//        Map<String,Object> token = GlobalFunction.extractToken(request);
+//        Optional<User> optionalUser = userRepo.findByUsername(token.get("username").toString());
+//
+//        User userDB = optionalUser.get();
+//        otp = random.nextInt(111111,999999);
+//        userDB.setOtp(BcryptImpl.hash(String.valueOf(otp)));
+//        SendMailOTP.verifyNewOtp("OTP Ganti Password",userDB.getFirstName(),userDB.getEmail(),String.valueOf(otp));
+//        return new ResponseHandler().handleResponse("OTP Berhasil Dikirim",
+//                HttpStatus.OK,
+//                null,null,request);
+//    }
+//
+    public ResponseEntity<Object>newOtp(String email,HttpServletRequest request) throws UsernameNotFoundException {
+        Integer otp = null;
+        Optional<User> optionalUser = userRepo.findByUsername(email);
+        User userDB = optionalUser.get();
+        otp = random.nextInt(111111,999999);
+        userDB.setOtp(BcryptImpl.hash(String.valueOf(otp)));
+        SendMailOTP.verifyNewOtp("Kirim Ulang OTP",userDB.getFirstName(),userDB.getEmail(),String.valueOf(otp));
+        return new ResponseHandler().handleResponse("OTP Berhasil Dikirim",
+                HttpStatus.OK,
+                null,null,request);
     }
 
 

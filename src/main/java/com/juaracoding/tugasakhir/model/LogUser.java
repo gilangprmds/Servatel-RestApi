@@ -1,10 +1,12 @@
 package com.juaracoding.tugasakhir.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.juaracoding.tugasakhir.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /*
@@ -30,11 +32,11 @@ public class LogUser {
     @JsonProperty("id-user")
     private Long idUser;
 
-    @Column(name = "NamaUser")
-    private String name;
-    @Column (name = "Email", length = 60, nullable = false, unique = true)
+    @Column(name = "Username")
+    private String username;
+    @Column (name = "Email", length = 60, nullable = false )
     private String email;
-    @Column(name = "NoHp", length = 16, nullable = false, unique = true)
+    @Column(name = "NoHp", length = 16, nullable = false)
     private String noHp;
     @Column (name = "Address", length = 255, nullable = false)
     private String address;
@@ -48,6 +50,14 @@ public class LogUser {
     private String firstName;
     @Column (name = "LastName", length = 50, nullable = false)
     private String lastName;
+    @ManyToOne
+    @JoinColumn(name = "IDRole", foreignKey = @ForeignKey(name = "fk-logUser-to-role"))
+    private Role role;
+
+    @Column(name = "TanggalLahir")
+    private LocalDate tanggalLahir;
+    @Column(name = "Password", length = 60, nullable = false)
+    private String password;
 
     @Column(name = "Flag",length = 1)
     private Character flag;
