@@ -218,6 +218,7 @@ public class UserServiceImpl implements IService<User> {
         return GlobalResponse.dataResponseList(mapList,request);
     }
 
+    @Transactional
     public ResponseEntity<Object>newOtp(HttpServletRequest request) throws UsernameNotFoundException {
         Integer otp = null;
         Map<String,Object> token = GlobalFunction.extractToken(request);
@@ -232,6 +233,7 @@ public class UserServiceImpl implements IService<User> {
                 null,null,request);
     }
 
+    @Transactional
     public ResponseEntity<Object> setChangePassword(ValSetChangePasswordDTO user, HttpServletRequest request) throws UsernameNotFoundException {
         Map<String,Object> token = GlobalFunction.extractToken(request);
         if (user == null) {
@@ -241,7 +243,7 @@ public class UserServiceImpl implements IService<User> {
         }
         Optional<User> optionalUser = userRepo.findByUsername(token.get("username").toString());
         User userDB = optionalUser.get();
-        if (!userDB.getOtp().equals(user.getOtp())) {
+        if (!BcryptImpl.verifyHash(user.getOtp(),userDB.getOtp())) {
             return new ResponseHandler().handleResponse("OTP TIDAK VALID",
                     HttpStatus.BAD_REQUEST,
                     null, "X01008", request);
@@ -251,10 +253,10 @@ public class UserServiceImpl implements IService<User> {
                     HttpStatus.BAD_REQUEST,
                     null, "X01008", request);
         }
-        if (!user.getPasswordBaru().equals(user.getKonfirmasiPasswordBaru())) {
+        if (!(user.getPasswordBaru().toString()).equals((user.getKonfirmasiPasswordBaru()).toString())) {
             return new ResponseHandler().handleResponse("PASSWORD TIDAK VALID",
                     HttpStatus.BAD_REQUEST,
-                    null, "X01008", request);
+                    null, "X01010", request);
         }
         userDB.setPassword(BcryptImpl.hash(userDB.getUsername()+user.getPasswordBaru()));
         return new ResponseHandler().handleResponse("Password Berhasil Diubah",
