@@ -39,6 +39,8 @@ public class Room {
     @OneToMany(mappedBy = "room")
     private List<Availability> availabilities = new ArrayList<>();
 
+    @Column(name = "LinkImage")
+    private String linkImage;
 //    @OneToMany(mappedBy = "room")
 //    private List<RoomImage> roomImages = new ArrayList<>();
 }

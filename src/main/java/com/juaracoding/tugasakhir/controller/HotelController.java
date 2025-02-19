@@ -28,6 +28,7 @@ public class HotelController {
     @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> save(@RequestPart("hotel") String hotelJson,
                                        @RequestPart(value = "hotelImages") List<MultipartFile> hotelImages,
+                                       @RequestPart(value = "roomsImages") List<MultipartFile> roomsImages,
                                        HttpServletRequest request) {
         HotelRegistrationDTO hotelRegistrationDTO;
         try{
@@ -36,7 +37,7 @@ public class HotelController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Invalid data format");
         }
-        return hotelService.save(hotelService.mapHotelRegistrationDTOtoHotel(hotelRegistrationDTO), hotelImages, request);
+        return hotelService.save(hotelService.mapHotelRegistrationDTOtoHotel(hotelRegistrationDTO), hotelImages, roomsImages, request);
     }
 
 

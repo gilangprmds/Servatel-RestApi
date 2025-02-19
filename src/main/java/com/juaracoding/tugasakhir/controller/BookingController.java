@@ -29,6 +29,14 @@ public class BookingController {
         return bookingService.findBookingsByCustomerUsername(username, request);
     }
 
+    @GetMapping("/booking-list")
+    public ResponseEntity<Object> findAllBookingsByManager(HttpServletRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return bookingService.findAllBookingsByManagerId(username, request);
+    }
+
+
+
     @GetMapping("/my-booking/{id}")
     public ResponseEntity<Object> findBookingById(@PathVariable Long id, HttpServletRequest request) {
         return bookingService.findBookingById(id, request);

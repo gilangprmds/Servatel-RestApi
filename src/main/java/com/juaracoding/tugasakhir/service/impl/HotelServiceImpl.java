@@ -69,7 +69,9 @@ public class HotelServiceImpl implements HotelService<Hotel> {
     private TransformPagination transformPagination;
 
     @Override
-    public ResponseEntity<Object> save(Hotel hotel, List<MultipartFile> hotelImages, HttpServletRequest request) {
+    public ResponseEntity<Object> save(Hotel hotel, List<MultipartFile> hotelImages,
+                                       List<MultipartFile> roomsImages,
+                                       HttpServletRequest request) {
 //        Map map;
 //        rootPath = Paths.get(BASE_URL_IMAGE+"/"+new SimpleDateFormat("ddMMyyyyHHmmssSSS").format(new Date()));
 //        String strPathz = rootPath.toAbsolutePath().toString();
@@ -117,6 +119,16 @@ public class HotelServiceImpl implements HotelService<Hotel> {
             // **3. Set daftar gambar ke hotel dan update hotel**
             hotel.setHotelImages(images);
             hotelRepository.save(hotel); // Simpan ulang hotel agar daftar gambar tersimpan
+            for (int i = 0; i < hotel.getRooms().size(); i++) {
+                if (i < roomsImages.size()) { // Pastikan tidak melebihi jumlah gambar yang dikirim
+                    MultipartFile file = roomsImages.get(i);
+                    String imageUrl = uploadFile(file); // Upload file dan dapatkan URL
+
+                    // Tambahkan URL ke room yang sesuai
+                    hotel.getRooms().get(i).setLinkImage(imageUrl);
+                }
+            }
+            hotelRepository.save(hotel);
 
         }catch (Exception e){
             LoggingFile.logException("HotelService", "save",e, OtherConfig.getEnableLogFile());

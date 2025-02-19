@@ -11,12 +11,14 @@ import com.juaracoding.tugasakhir.repository.BookingRepository;
 import com.juaracoding.tugasakhir.repository.HotelRepository;
 import com.juaracoding.tugasakhir.repository.UserRepository;
 import com.juaracoding.tugasakhir.util.LoggingFile;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -87,6 +89,22 @@ public class BookingServiceImpl {
         }
         return new ResponseHandler().handleResponse("OK",
                 HttpStatus.OK, bookingDTOS, null, request);
+    }
+
+    public ResponseEntity<Object>findAllBookingsByManagerId(String username, HttpServletRequest request) {
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
+            Long managerId = user.getId();
+            List<Hotel> hotels = hotelRepository.findAllByUser_Id(managerId);
+
+
+        List<RespBookingDTO> respBookingDTO = hotels.stream()
+                .flatMap(hotel -> bookingRepository.findBookingsByHotelId(hotel.getId()).stream())
+                .map(this::mapBookingModelToBookingDto)
+                .collect(Collectors.toList());
+
+        return new ResponseHandler().handleResponse("OK", HttpStatus.OK,
+                respBookingDTO,null,request);
     }
 
     public ResponseEntity<Object> findBookingById(Long id, HttpServletRequest request) {

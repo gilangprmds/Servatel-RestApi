@@ -16,4 +16,5 @@ public class RespRoomDTO {
     private Double pricePerNight;
     private Integer maxAvailableRooms;
     private Integer maxGuest;
+    private String linkImage;
 }

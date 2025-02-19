@@ -16,6 +16,8 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
 
     Page<Hotel> findAllByUser_Id(Pageable pageable, Long id);
 
+    List<Hotel> findAllByUser_Id(Long id);
+
     @Query(value = "SELECT h " +
             "FROM Hotel h " +
             "JOIN h.rooms r " +
