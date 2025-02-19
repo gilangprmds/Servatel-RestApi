@@ -156,7 +156,7 @@ public class BookingServiceImpl {
         return RespBookingDTO.builder()
                 .id(booking.getId())
                 .confirmationNumber(booking.getConfirmationNumber())
-                .bookingDate(booking.getBookingDate())
+                .bookingDate(booking.getBookingDate().toLocalDate())
                 .customerId(booking.getUser().getId())
                 .hotelId(booking.getHotel().getId())
                 .checkinDate(booking.getCheckinDate())
@@ -170,6 +170,7 @@ public class BookingServiceImpl {
                 .customerEmail(customerUser.getEmail())
                 .paymentStatus(booking.getPayment().getPaymentStatus())
                 .paymentMethod(booking.getPayment().getPaymentMethod())
+                .token(booking.getPayment().getToken())
                 .build();
     }
 }

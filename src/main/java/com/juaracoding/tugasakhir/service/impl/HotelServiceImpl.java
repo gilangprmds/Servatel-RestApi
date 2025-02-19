@@ -201,15 +201,16 @@ public class HotelServiceImpl implements HotelService<Hotel> {
                 mapList,null,request);
     }
 
-    public ResponseEntity<Object> findAllByManagerId(Pageable pageable,Long id, HttpServletRequest request) {
+    public ResponseEntity<Object> findAllByManagerId(Pageable pageable,String username, HttpServletRequest request) {
         Map<String, Object> mapList;
         try {
+            Optional<User> user = userRepository.findByUsername(username);
+            User userDB = user.get();
             Page<Hotel> page = null;
             List<Hotel> list = null;
-            page = hotelRepository.findAllByUser_Id(pageable, id);
+            page = hotelRepository.findAllByUser_Id(pageable, userDB.getId());
             list = page.getContent();
             List<RespHotelDTO> listDTO = convertToListRespHotelDTO(list);
-            Optional<User> user = userRepository.findById(id);
 
             if (list.isEmpty() && user.isPresent()) {
                 return new ResponseHandler().handleResponse("Hotel Masih Kosong",

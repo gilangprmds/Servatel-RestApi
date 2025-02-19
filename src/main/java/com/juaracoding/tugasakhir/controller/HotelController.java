@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -86,12 +87,12 @@ public class HotelController {
         return hotelService.findAll(pageable,request);
     }
 
-    @GetMapping("/manager/hotels/{id}")
+    @GetMapping("/manager/hotels")
     public ResponseEntity<Object> findAllByManagerId( @RequestParam(value = "page") Integer page,
-                                                      @PathVariable(value = "id") Long id,
                                                       HttpServletRequest request){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Pageable pageable = PageRequest.of(page-1,2, Sort.by("id"));//asc
-        return hotelService.findAllByManagerId(pageable, id, request);
+        return hotelService.findAllByManagerId(pageable, username, request);
     }
 
     @GetMapping("/hotel/{id}")

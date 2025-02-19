@@ -60,7 +60,8 @@ public class SecurityConfiguration {
                                 .requestMatchers(
                                         "/auth/**",
                                         "/swagger-ui/**",
-                                        "/v3/api-docs/**")
+                                        "/v3/api-docs/**",
+                                        "/api/payment/webhook")
                                 .permitAll().anyRequest().authenticated()).
                 httpBasic(basic -> basic.authenticationEntryPoint(authenticationEntryPoint))
                 .exceptionHandling(Customizer.withDefaults())

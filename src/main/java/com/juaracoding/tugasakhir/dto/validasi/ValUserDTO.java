@@ -36,12 +36,12 @@ public class ValUserDTO {
             message = "Format Huruf kecil ,numeric dan titik saja min 8 max 25 karakter, contoh : paulch.123")
     private String username;
 
-    @NotNull
-    @NotBlank
-    @NotEmpty
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[_#\\-$@])[\\w].{8,15}$",
-            message = "Format minimal 1 angka, 1 huruf kecil, 1 huruf besar, 1 spesial karakter (_ \"Underscore\", - \"Hyphen\", @ \"At\", # \"Hash\", atau $ \"Dollar\") setelah 4 kondisi min 9 max 16 alfanumerik, contoh : aB4$12345")
-    private String password;
+//    @NotNull
+//    @NotBlank
+//    @NotEmpty
+//    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[_#\\-$@])[\\w].{8,15}$",
+//            message = "Format minimal 1 angka, 1 huruf kecil, 1 huruf besar, 1 spesial karakter (_ \"Underscore\", - \"Hyphen\", @ \"At\", # \"Hash\", atau $ \"Dollar\") setelah 4 kondisi min 9 max 16 alfanumerik, contoh : aB4$12345")
+//    private String password;
 
     @JsonProperty("first-name")
     private String firstName;
@@ -77,8 +77,8 @@ public class ValUserDTO {
     @JsonProperty("tanggal-lahir")
     private LocalDate tanggalLahir;
 
-    @NotNull
-    private RespRoleDTO role;
+//    @NotNull
+//    private String roleRoleType;
 
 
 

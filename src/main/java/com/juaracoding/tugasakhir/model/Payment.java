@@ -1,7 +1,7 @@
 package com.juaracoding.tugasakhir.model;
 
 import com.juaracoding.tugasakhir.enums.Currency;
-import com.juaracoding.tugasakhir.enums.PaymentMethod;
+//import com.juaracoding.tugasakhir.enums.PaymentMethod;
 import com.juaracoding.tugasakhir.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,11 +41,16 @@ public class Payment {
     @Column(name = "PaymentStatus", nullable = false)
     private PaymentStatus paymentStatus;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "PaymentMethod", nullable = true)
-    private PaymentMethod paymentMethod;
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "PaymentMethod", nullable = true)
+//    private PaymentMethod paymentMethod;
+    @Column(name = "PaymentMethod")
+    private String paymentMethod;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "Currency", nullable = false)
     private Currency currency;
+
+    @Column(name = "Token")
+    private String token;
 }
