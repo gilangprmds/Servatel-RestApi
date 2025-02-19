@@ -40,5 +40,5 @@ public class ValChangePasswordDTO {
     @NotBlank
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[_#\\-$@])[\\w].{8,15}$",
             message = "Format minimal 1 angka, 1 huruf kecil, 1 huruf besar, 1 spesial karakter (_ \"Underscore\", - \"Hyphen\", @ \"At\", # \"Hash\", atau $ \"Dollar\") setelah 4 kondisi min 9 max 16 alfanumerik, contoh : aB4$12345")
-    private String KonfirmasiPasswordBaru;
+    private String konfirmasiPasswordBaru;
 }
