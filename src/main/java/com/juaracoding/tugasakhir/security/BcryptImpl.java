@@ -32,12 +32,13 @@ public class BcryptImpl {
 
     public static void main(String[] args) {
 
-        String strUserName = "manager1Manager@1";
+        String strUserName = "174857";
         System.out.println(hash(strUserName));
         System.out.println(hash(strUserName).length());
 
-        System.out.println(verifyHash("980333","$2a$11$tQKeFrkX5dzbYhuTCgD0xeBwWkYWrEeafmbSOyLBCG6eEM9XMP5Dy"));
-        System.out.println(verifyHash(strUserName,"$2a$11$r9Uj5UuqePNLoYRmj1yUguDie6cZ0Co/3YudQFVvyPqQE7VwIkzJ6"));
-        System.out.println(verifyHash(strUserName,"$2a$11$YUVY8jlm9v6lrg7Ahr9lEewpKDl8Zj1BIZ6/hXA0mtZG4hcRdy8pm"));
+        System.out.println(verifyHash("326586","$2a$11$ZUT6/omxkGTa/GpkaPRgGu7WomsDDb95lWdut/PNQeU1yjofT76hi"));
+        System.out.println(verifyHash(strUserName,"$2a$11$pZyVH69dHnMGHKM2op5udO2qEzuBk9zYTy3GTyqko/AeHgHs6pNWS"));
+        System.out.println(verifyHash(strUserName,"$2a$11$k9SaQKkbtcEEtgSR3jzOY.4eMfvwZoYwXDNtCkox44ywZlnMk.qT."));
+        System.out.println(verifyHash(strUserName,"$2a$11$k9SaQKkbtcEEtgSR3jzOY.4eMfvwZoYwXDNtCkox44ywZlnMk.qT."));
     }
 }
