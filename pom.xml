@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.juaracoding</groupId>
-    <artifactId>TugasAkhir</artifactId>
+    <artifactId>Servatel-RestApi</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>TugasAkhir</name>
     <description>TugasAkhir</description>
