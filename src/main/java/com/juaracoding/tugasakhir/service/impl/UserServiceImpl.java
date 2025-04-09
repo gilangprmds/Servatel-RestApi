@@ -9,6 +9,7 @@ import com.juaracoding.tugasakhir.dto.table.TableUserDTO;
 import com.juaracoding.tugasakhir.dto.validasi.ValSetChangePasswordDTO;
 import com.juaracoding.tugasakhir.dto.validasi.ValUserDTO;
 import com.juaracoding.tugasakhir.handler.ResponseHandler;
+import com.juaracoding.tugasakhir.model.Role;
 import com.juaracoding.tugasakhir.model.User;
 import com.juaracoding.tugasakhir.repository.UserRepository;
 import com.juaracoding.tugasakhir.security.BcryptImpl;
@@ -31,6 +32,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /*
 Created By IntelliJ IDEA 2024.3 (Community Edition)
@@ -86,7 +88,11 @@ public class UserServiceImpl implements IService<User> {
 //                role.setId(2L);
 //                user.setRole(role);
 //            }
+            Role role = new Role();
+            role.setId(3L);
+            user.setRole(role);
             user.setIsRegistered(true);
+            user.setIsActive(true);
             user.setPassword(BcryptImpl.hash(user.getUsername()+user.getPassword()));
             user.setCreatedBy(token.get("username").toString());
             user.setCreatedDate(new Date());
@@ -137,7 +143,8 @@ public class UserServiceImpl implements IService<User> {
             if(!userOptional.isPresent()){
                 return GlobalResponse.dataTidakDitemukan(request);
             }
-            userRepo.deleteById(id);
+            User userDB = userOptional.get();
+            userDB.setIsActive(false);
         }catch (Exception e){
             LoggingFile.logException("UserService","delete --> Line 111",e, OtherConfig.getEnableLogFile());
             return GlobalResponse.dataGagalDiubah("FEAUT02021",request);
@@ -151,8 +158,11 @@ public class UserServiceImpl implements IService<User> {
         List<User> list = null;
         page = userRepo.findAll(pageable);
         list = page.getContent();
+        List<User> activeUser = list.stream()
+                .filter(user -> user.getIsActive() == true)
+                .collect(Collectors.toList());
 //        List<RespUserDTO> listDTO = convertToListRespUserDTO(list);
-        List<TableUserDTO> listDTO = convertToTableUserDTO(list);
+        List<TableUserDTO> listDTO = convertToTableUserDTO(activeUser);
 
         if(list.isEmpty()){
             return GlobalResponse.dataTidakDitemukan(request);

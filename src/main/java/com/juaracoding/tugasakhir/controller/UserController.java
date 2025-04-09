@@ -38,20 +38,20 @@ public class UserController {
     }
 
     @GetMapping("")
-    @PreAuthorize("hasAuthority('User')")
+    @PreAuthorize("hasAuthority('User Management')")
     public ResponseEntity<Object> findAll(HttpServletRequest request){
         Pageable pageable = PageRequest.of(0,100, Sort.by("id"));//asc
         return userServiceImpl.findAll(pageable,request);
     }
 
     @PostMapping("")
-    @PreAuthorize("hasAuthority('User')")
+    @PreAuthorize("hasAuthority('User Management')")
     public ResponseEntity<Object> save(@Valid @RequestBody ValUserDTO userDTO, HttpServletRequest request){
         return userServiceImpl.save(userServiceImpl.convertToUser(userDTO),request);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('User')")
+    @PreAuthorize("hasAuthority('User Management')")
     public ResponseEntity<Object> update(
             @PathVariable(value = "id") Long id,
             @Valid @RequestBody ValUserDTO userDTO, HttpServletRequest request){
@@ -59,7 +59,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('User')")
+    @PreAuthorize("hasAuthority('User Management')")
     public ResponseEntity<Object> delete(
             @PathVariable(value = "id") Long id,
             HttpServletRequest request){
@@ -67,7 +67,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('User')")
+    @PreAuthorize("hasAuthority('User Management')")
     public ResponseEntity<Object> findById(@PathVariable(value = "id") Long id,
                                            HttpServletRequest request){
         //tambahkan pageable
@@ -77,7 +77,7 @@ public class UserController {
     }
 
     @GetMapping("/{sort}/{sortBy}/{page}")
-    @PreAuthorize("hasAuthority('User')")
+    @PreAuthorize("hasAuthority('User Management')")
     public ResponseEntity<Object> findByParam(
             @PathVariable(value = "sort") String sort,
             @PathVariable(value = "sortBy") String sortBy,//name

@@ -39,6 +39,9 @@ public class User implements UserDetails {
     @Column(name = "IsRegistered",columnDefinition = ("bit default 0"))
     private Boolean isRegistered=false;
 
+    @Column(name = "IsActive")
+    private Boolean isActive=false;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<Menu> lt = this.role.getLtMenu();

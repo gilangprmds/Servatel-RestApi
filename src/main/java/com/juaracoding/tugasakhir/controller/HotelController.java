@@ -84,7 +84,7 @@ public class HotelController {
     @GetMapping("/hotels")
     public ResponseEntity<Object> findAll(@RequestParam(value = "page") Integer page,
             HttpServletRequest request){
-        Pageable pageable = PageRequest.of(page-1,2, Sort.by("id"));//asc
+        Pageable pageable = PageRequest.of(page-1,1, Sort.by("id"));//asc
         return hotelService.findAll(pageable,request);
     }
 

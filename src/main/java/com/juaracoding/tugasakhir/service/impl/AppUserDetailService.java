@@ -171,6 +171,7 @@ public class AppUserDetailService implements UserDetailsService {
 
         userDB.setOtp(BcryptImpl.hash(String.valueOf(random.nextInt(111111,999999))));
         userDB.setIsRegistered(true);
+        userDB.setIsActive(true);
         return new ResponseHandler().handleResponse("Registrasi Berhasil !!",
                 HttpStatus.OK,
                 null,null,request);
