@@ -19,8 +19,14 @@ public class AddressController {
     private AddressServiceImpl addressService;
 
     @GetMapping("/city")
-    public ResponseEntity<Object> findCity(@RequestParam(value = "city") String city,
+    public ResponseEntity<Object> findCity(@RequestParam(value = "city", required = false)  String city,
                                            HttpServletRequest request){
-        return addressService.findByCity(city, request);
+
+        if (city != null && !city.isEmpty()) {
+            return addressService.findByCity(city, request); // pencarian
+        } else {
+            return addressService.findAllByCity(request); // semua data
+        }
     }
+
 }

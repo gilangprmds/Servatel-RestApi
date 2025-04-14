@@ -61,7 +61,8 @@ public class SecurityConfiguration {
                                         "/auth/**",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
-                                        "/api/payment/webhook")
+                                        "/api/payment/webhook",
+                                        "/address/city")
                                 .permitAll().anyRequest().authenticated()).
                 httpBasic(basic -> basic.authenticationEntryPoint(authenticationEntryPoint))
                 .exceptionHandling(Customizer.withDefaults())

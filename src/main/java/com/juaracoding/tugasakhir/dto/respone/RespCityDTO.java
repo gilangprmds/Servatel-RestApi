@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class RespCityDTO {
 
     private String cityName;
-    private Integer totalHotel;
+    private Long totalHotel;
 }
