@@ -156,16 +156,38 @@ public class UserServiceImpl implements IService<User> {
     public ResponseEntity<Object> findAll(Pageable pageable, HttpServletRequest request) {
         Page<User> page = null;
         List<User> list = null;
-        page = userRepo.findAll(pageable);
+        page = userRepo.findAllByIsActiveTrue(pageable);
         list = page.getContent();
-        List<User> activeUser = list.stream()
-                .filter(user -> user.getIsActive() == true)
-                .collect(Collectors.toList());
+//        List<User> activeUser = list.stream()
+//                .filter(user -> user.getIsActive() == true)
+//                .collect(Collectors.toList());
 //        List<RespUserDTO> listDTO = convertToListRespUserDTO(list);
-        List<TableUserDTO> listDTO = convertToTableUserDTO(activeUser);
+        List<TableUserDTO> listDTO = convertToTableUserDTO(list);
 
         if(list.isEmpty()){
             return GlobalResponse.dataTidakDitemukan(request);
+        }
+        Map<String, Object> mapList = transformPagination.transformPagination(listDTO,page,"id","");
+        return GlobalResponse.dataResponseList(mapList,request);
+    }
+
+    public ResponseEntity<Object> findAllManagerOrCustomer(Pageable pageable, Long id, HttpServletRequest request) {
+        Page<User> page = null;
+        List<User> list = null;
+        List<TableUserDTO> listDTO;
+        try {
+            page = userRepo.findByRole_IdAndIsActiveTrue(pageable, id);
+            list = page.getContent();
+//            List<User> activeUser = list.stream()
+//                    .filter(user -> user.getIsActive() == true)
+//                    .collect(Collectors.toList());
+//        List<RespUserDTO> listDTO = convertToListRespUserDTO(list);
+            listDTO = convertToTableUserDTO(list);
+            if(list.isEmpty()){
+                return GlobalResponse.dataTidakDitemukan(request);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         Map<String, Object> mapList = transformPagination.transformPagination(listDTO,page,"id","");
         return GlobalResponse.dataResponseList(mapList,request);
@@ -191,17 +213,41 @@ public class UserServiceImpl implements IService<User> {
                 respUserDTO,null,request);
     }
 
-//    public ResponseEntity<Object> findByRoleId(Pageable pageable, Long id, HttpServletRequest request){
-//
-//        Page<User> page = userRepo.findByRole_Id(pageable,id);
-//        List<User> list = page.getContent();
-//
-//        if(list.isEmpty()){
-//            return GlobalResponse.dataTidakDitemukan(request);
-//        }
-//        List<TableUserByRoleDTO> listDTO = convertToTableUserByRoleDTO(list);
-//        return null;
-//    }
+    public ResponseEntity<Object> findByNameAndId(Pageable pageable, String name, Long id, HttpServletRequest request) {
+        Page<User> page = null;
+        List<User> list = null;
+        page = userRepo.searchByNameAndId(name, id, pageable);
+        list = page.getContent();
+//        List<User> activeUser = list.stream()
+//                .filter(user -> user.getIsActive() == true)
+//                .collect(Collectors.toList());
+//        List<RespUserDTO> listDTO = convertToListRespUserDTO(list);
+        List<TableUserDTO> listDTO = convertToTableUserDTO(list);
+
+        if(list.isEmpty()){
+            return GlobalResponse.dataTidakDitemukan(request);
+        }
+        Map<String, Object> mapList = transformPagination.transformPagination(listDTO,page,"id","");
+        return GlobalResponse.dataResponseList(mapList,request);
+    }
+
+    public ResponseEntity<Object> findByName(Pageable pageable, String name, HttpServletRequest request) {
+        Page<User> page = null;
+        List<User> list = null;
+        page = userRepo.searchByName(name, pageable);
+        list = page.getContent();
+//        List<User> activeUser = list.stream()
+//                .filter(user -> user.getIsActive() == true)
+//                .collect(Collectors.toList());
+//        List<RespUserDTO> listDTO = convertToListRespUserDTO(list);
+        List<TableUserDTO> listDTO = convertToTableUserDTO(list);
+
+        if(list.isEmpty()){
+            return GlobalResponse.dataTidakDitemukan(request);
+        }
+        Map<String, Object> mapList = transformPagination.transformPagination(listDTO,page,"id","");
+        return GlobalResponse.dataResponseList(mapList,request);
+    }
 
     @Override
     public ResponseEntity<Object> findByParam(Pageable pageable, String columnName, String value, HttpServletRequest request) {
@@ -227,6 +273,8 @@ public class UserServiceImpl implements IService<User> {
         Map<String, Object> mapList = transformPagination.transformPagination(listDTO,page,columnName,value);
         return GlobalResponse.dataResponseList(mapList,request);
     }
+
+
 
     @Transactional
     public ResponseEntity<Object>newOtp(HttpServletRequest request) throws UsernameNotFoundException {

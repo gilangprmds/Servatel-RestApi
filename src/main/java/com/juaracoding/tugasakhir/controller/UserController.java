@@ -39,10 +39,40 @@ public class UserController {
 
     @GetMapping("")
     @PreAuthorize("hasAuthority('User Management')")
-    public ResponseEntity<Object> findAll(HttpServletRequest request){
+    public ResponseEntity<Object> findAll(@RequestParam(value = "id", required = false) Long id,
+                                          @RequestParam(value = "name", required = false) String name,
+                                          HttpServletRequest request){
         Pageable pageable = PageRequest.of(0,100, Sort.by("id"));//asc
-        return userServiceImpl.findAll(pageable,request);
+        if ((id != null && id.describeConstable().isPresent()) && (name!=null && !name.isBlank()) ) {
+            return userServiceImpl.findByNameAndId(pageable, name, id, request);
+
+        } else if ((name!=null && !name.isBlank()) && (id == null || id.describeConstable().isEmpty())) {
+            return userServiceImpl.findByName(pageable, name, request);
+        } else if ((id != null && id.describeConstable().isPresent()) && (name ==null || !name.isBlank())) {
+            return userServiceImpl.findAllManagerOrCustomer(pageable, id, request);
+        } else {
+            return userServiceImpl.findAll(pageable,request);// semua data
+        }
     }
+//
+//    @GetMapping("/test")
+//    @PreAuthorize("hasAuthority('User Management')")
+//    public ResponseEntity<Object> findByParam(@RequestParam(value = "id", required = false) Long id,
+//                                          @RequestParam(value = "name", required = false) String name,
+//                                          HttpServletRequest request){
+//        Pageable pageable = PageRequest.of(0,100, Sort.by("id"));//asc
+//
+//        return userServiceImpl.findByParam(pageable, name, id, request);// semua data
+//
+//    }
+
+
+//    @GetMapping("/manager")
+//    @PreAuthorize("hasAuthority('User Management')")
+//    public ResponseEntity<Object> findAllManager(HttpServletRequest request){
+//        Pageable pageable = PageRequest.of(0,100, Sort.by("id"));//asc
+//        return userServiceImpl.findAll(pageable,request);
+//    }
 
     @PostMapping("")
     @PreAuthorize("hasAuthority('User Management')")

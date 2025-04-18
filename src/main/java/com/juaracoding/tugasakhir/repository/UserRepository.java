@@ -5,12 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-
+    Page<User> findAllByIsActiveTrue(Pageable pageable);
 
     public Page<User> findByAddressContainsIgnoreCase(Pageable pageable, String name);
     public Page<User> findByUsernameContainsIgnoreCase(Pageable pageable, String name);
@@ -18,7 +19,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
     public Page<User> findByEmailContainsIgnoreCase(Pageable pageable, String name);
     public Page<User> findByNoHpContainsIgnoreCase(Pageable pageable, String name);
     public Page<User> findByFirstNameContainsIgnoreCase(Pageable pageable, String name);
-    public Page<User> findByRole_Id(Pageable pageable,Long id);
+    public Page<User> findByRole_IdAndIsActiveTrue(Pageable pageable,Long id);
+
+//    Page<User> findByFirstNameOrLastNameContainsIgnoreCase(Pageable pageable, String name);
+
+    @Query("SELECT u FROM User u WHERE (LOWER(u.firstName) LIKE LOWER(CONCAT('%', :keyword, '%'))" +
+            " OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND u.isActive = true " +
+            "AND u.role.id = :id")
+    Page<User> searchByNameAndId(@Param("keyword") String keyword, Long id, Pageable pageable);
+
+    @Query("SELECT u FROM User u WHERE (LOWER(u.firstName) LIKE LOWER(CONCAT('%', :keyword, '%'))" +
+            " OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND u.isActive = true ")
+    Page<User> searchByName(@Param("keyword") String keyword, Pageable pageable);
 
     public Page<User> findByLastNameContainsIgnoreCase(Pageable pageable, String name);
     //    @Query(value = "SELECT u FROM User u WHERE lower(u.role.roleType) LIKE lower(concat('%',?1,'%'))")
